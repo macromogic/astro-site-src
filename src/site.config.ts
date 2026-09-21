@@ -6,7 +6,7 @@ export const site = {
   lang: 'zh-Hans',
   author: { name: 'Weijie Huang' },
   /** Public source repository, linked from the footer. Leave undefined to hide the link. */
-  repo: undefined as string | undefined,
+  repo: 'https://github.com/macromogic/astro-site-src' as string | undefined,
   postsPerPage: 5,
   nav: [
     { href: '/', label: 'Home' },
