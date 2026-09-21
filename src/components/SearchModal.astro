@@ -1,0 +1,62 @@
+---
+import { Icon } from 'astro-icon/components';
+import PagefindConfig from 'astro-pagefind/components/PagefindConfig.astro';
+---
+
+<section class="modal" id="search-modal" role="dialog" aria-modal="true" aria-labelledby="search-title" hidden>
+  <div class="modal-background" data-close></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title" id="search-title">Search</p>
+      <button class="modal-close" data-close aria-label="close"><Icon name="fa6-solid:xmark" /></button>
+    </header>
+    <section class="modal-card-body">
+      <PagefindConfig lang="zh" />
+      <pagefind-input placeholder="Search posts and publications…" aria-label="Search posts and publications"></pagefind-input>
+      <pagefind-summary></pagefind-summary>
+      <pagefind-results show-images="false" max-results="10" max-sub-results="3"></pagefind-results>
+    </section>
+  </div>
+</section>
+
+<script>
+  const modal = document.getElementById('search-modal')!;
+  const opener = document.getElementById('nav-search');
+
+  const open = () => {
+    modal.hidden = false;
+    modal.classList.add('is-active');
+    document.body.style.overflow = 'hidden';
+    requestAnimationFrame(() => modal.querySelector<HTMLInputElement>('input')?.focus());
+  };
+  const close = () => {
+    modal.classList.remove('is-active');
+    modal.hidden = true;
+    document.body.style.overflow = '';
+  };
+
+  opener?.addEventListener('click', open);
+  modal.querySelectorAll('[data-close]').forEach((el) => el.addEventListener('click', close));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('is-active')) close();
+    if (e.key === '/' && !modal.classList.contains('is-active') && !(e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement)) {
+      e.preventDefault();
+      open();
+    }
+  });
+</script>
+
+<style is:global>
+  #search-modal {
+    --pf-font: var(--font-serif);
+    --pf-background: var(--bg-card);
+    --pf-border: var(--border);
+    --pf-border-focus: var(--link);
+    --pf-hover: var(--bg-soft);
+    --pf-border-radius: var(--radius-small);
+    --pf-mark: color-mix(in srgb, var(--accent) 25%, transparent);
+    color: var(--text);
+  }
+  #search-modal pagefind-results a { color: var(--text-strong); }
+  #search-modal mark { background: var(--pf-mark); color: inherit; }
+</style>

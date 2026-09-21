@@ -1,0 +1,140 @@
+---
+import '@fontsource/libertinus-serif/400.css';
+import '@fontsource/libertinus-serif/400-italic.css';
+import '@fontsource/libertinus-serif/700.css';
+import '@fontsource/libertinus-serif/700-italic.css';
+import '@fontsource/noto-serif-sc/400.css';
+import '@fontsource/noto-serif-sc/700.css';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/400-italic.css';
+import '@fontsource/ibm-plex-mono/700.css';
+import 'katex/dist/katex.min.css';
+import '../styles/global.css';
+
+import { getImage } from 'astro:assets';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import SearchModal from '../components/SearchModal.astro';
+import MathEnhance from '../components/MathEnhance.astro';
+import CodeEnhance from '../components/CodeEnhance.astro';
+import { site } from '../site.config';
+import portrait from '../assets/photo.jpg';
+
+interface Props {
+  title?: string;
+  description?: string;
+  lang?: string;
+  /** Exclude this page from the search index (listing pages, 404). */
+  noindex?: boolean;
+  /** Open Graph type; posts pass "article". */
+  type?: 'website' | 'article';
+  publishedTime?: Date;
+  tags?: string[];
+}
+
+const {
+  title,
+  description = site.description,
+  lang = site.lang,
+  noindex = false,
+  type = 'website',
+  publishedTime,
+  tags = [],
+} = Astro.props;
+
+const fullTitle = title ? `${site.title} | ${title}` : site.title;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = await getImage({ src: portrait, width: 800, height: 800, format: 'jpeg', fit: 'cover' });
+const ogImageUrl = new URL(ogImage.src, Astro.site);
+const ogLocale = lang.startsWith('zh') ? 'zh_CN' : lang.startsWith('ja') ? 'ja_JP' : 'en_US';
+
+const jsonLd = type === 'article'
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      headline: title,
+      description,
+      datePublished: publishedTime?.toISOString(),
+      inLanguage: lang,
+      keywords: tags.join(', '),
+      url: canonical.href,
+      author: { '@type': 'Person', name: site.author.name, url: site.url },
+    }
+  : {
+      '@context': 'https://schema.org',
+      '@type': 'Person',
+      name: site.author.name,
+      url: site.url,
+      image: ogImageUrl.href,
+      jobTitle: site.contact.role,
+      affiliation: { '@type': 'Organization', name: site.contact.affiliation[site.contact.affiliation.length - 1] },
+      sameAs: [
+        `https://github.com/${site.social.github}`,
+        `https://scholar.google.com/citations?user=${site.social.googleScholar}`,
+        `https://orcid.org/${site.social.orcid}`,
+        `https://www.linkedin.com/in/${site.social.linkedin}`,
+      ],
+    };
+---
+
+<!doctype html>
+<html lang={lang} data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={site.author.name} />
+    <link rel="canonical" href={canonical} />
+
+    <meta property="og:site_name" content={site.title} />
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={title ?? site.title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="800" />
+    <meta property="og:image:height" content="800" />
+    <meta property="og:image:alt" content={`Portrait of ${site.author.name}`} />
+    <meta property="og:locale" content={ogLocale} />
+    {type === 'article' && publishedTime && <meta property="article:published_time" content={publishedTime.toISOString()} />}
+    {type === 'article' && <meta property="article:author" content={site.author.name} />}
+    {type === 'article' && tags.map((t) => <meta property="article:tag" content={t} />)}
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title ?? site.title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <link rel="manifest" href="/icons/site.webmanifest" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+    <link rel="alternate" type="application/atom+xml" title={site.title} href="/atom.xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <script is:inline>
+      (() => {
+        try {
+          const stored = localStorage.getItem('theme');
+          const theme = stored === 'dark' || stored === 'light'
+            ? stored
+            : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          document.documentElement.dataset.theme = theme;
+        } catch {}
+      })();
+    </script>
+  </head>
+  <body data-pagefind-body={noindex ? undefined : ''} id="top">
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Navbar />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <SearchModal />
+    <MathEnhance />
+    <CodeEnhance />
+    <Footer />
+  </body>
+</html>

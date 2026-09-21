@@ -1,0 +1,20 @@
+---
+import { Icon } from 'astro-icon/components';
+import { formatDate, isoDate } from '../lib/format';
+import { readingStats, type Post } from '../lib/posts';
+
+interface Props { post: Post }
+const { post } = Astro.props;
+const { words, minutes } = readingStats(post.body);
+---
+
+<div class="meta">
+  <span class="icon-text">
+    <span class="pair"><span class="icon"><Icon name="fa6-regular:calendar-days" /></span><time datetime={isoDate(post.data.date)}>{formatDate(post.data.date)}</time></span>
+  </span>
+  <span class="icon-text">
+    <span class="pair"><span class="icon"><Icon name="fa6-regular:clock" /></span>{minutes} min</span>
+    <span class="dot" aria-hidden="true">·</span>
+    <span class="pair"><span class="icon"><Icon name="fa6-solid:pencil" /></span>{words} words</span>
+  </span>
+</div>

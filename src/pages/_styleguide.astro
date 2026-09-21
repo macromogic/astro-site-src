@@ -1,0 +1,21 @@
+---
+// Style guide for the Button component. Files starting with "_" are not built as routes;
+// rename to `styleguide.astro` temporarily to view it at /styleguide/.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Button from '../components/Button.astro';
+---
+<BaseLayout title="Buttons" noindex>
+  <section class="section"><div class="container narrow">
+    <h1 class="title">Buttons</h1>
+    <p class="heading">Outlined (default) · primary · accent</p>
+    <p class="buttons"><Button>Default</Button><Button color="primary">Primary</Button><Button color="accent">Accent</Button><Button icon="fa6-solid:file-pdf">CV</Button><Button iconRight="fa6-solid:arrow-right">Read more</Button></p>
+    <p class="heading">Filled</p>
+    <p class="buttons"><Button variant="filled">Default</Button><Button variant="filled" color="primary">Primary</Button><Button variant="filled" color="accent" icon="fa6-solid:heart">Accent</Button></p>
+    <p class="heading">Text</p>
+    <p class="buttons"><Button variant="text">Default</Button><Button variant="text" color="primary" icon="fa6-solid:tag">Tags</Button><Button variant="text" color="accent">Accent</Button></p>
+    <p class="heading">Sizes and shapes</p>
+    <p class="buttons"><Button size="small">Small</Button><Button>Normal</Button><Button size="large">Large</Button><Button rounded color="primary">Rounded</Button><Button disabled>Disabled</Button></p>
+    <p class="heading">Full width</p>
+    <Button fullwidth variant="filled" color="primary" href="https://github.com/macromogic" icon="fa6-brands:github">GitHub</Button>
+  </div></section>
+</BaseLayout>

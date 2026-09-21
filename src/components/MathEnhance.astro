@@ -1,0 +1,122 @@
+---
+/**
+ * Progressive enhancements for KaTeX output:
+ *  - double-click any formula (or use the hover button on display math) to copy its TeX source
+ *  - display blocks wider than the column get a fade at the scrollable edge
+ * Does nothing on pages without math.
+ */
+---
+
+<div id="math-toast" class="math-toast" role="status" aria-live="polite" hidden></div>
+
+<script>
+  const texOf = (el: Element) =>
+    el.querySelector('annotation[encoding="application/x-tex"]')?.textContent?.trim() ?? '';
+
+  const toast = document.getElementById('math-toast')!;
+  let toastTimer: number | undefined;
+  const announce = (msg: string) => {
+    toast.textContent = msg;
+    toast.hidden = false;
+    toast.classList.add('is-visible');
+    window.clearTimeout(toastTimer);
+    toastTimer = window.setTimeout(() => { toast.classList.remove('is-visible'); toast.hidden = true; }, 1600);
+  };
+
+  const copyTex = async (el: Element) => {
+    const tex = texOf(el);
+    if (!tex) return;
+    try {
+      await navigator.clipboard.writeText(tex);
+      announce('TeX copied');
+    } catch {
+      window.prompt('Copy the TeX source:', tex);
+    }
+  };
+
+  // Double-click on any formula
+  document.addEventListener('dblclick', (e) => {
+    const katex = (e.target as Element).closest?.('.katex');
+    if (katex) { e.preventDefault(); window.getSelection()?.removeAllRanges(); copyTex(katex); }
+  });
+
+  // Display math: wrap for the scroll fade and add a hover copy button
+  const displays = document.querySelectorAll<HTMLElement>('.katex-display');
+  if (displays.length) {
+    for (const display of displays) {
+      const wrap = document.createElement('div');
+      wrap.className = 'math-block';
+      display.replaceWith(wrap);
+      wrap.append(display);
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'math-copy';
+      btn.title = 'Copy TeX source';
+      btn.setAttribute('aria-label', 'Copy TeX source');
+      btn.textContent = 'TeX';
+      btn.addEventListener('click', () => copyTex(display));
+      wrap.append(btn);
+
+      const update = () => {
+        const overflow = display.scrollWidth > display.clientWidth + 1;
+        wrap.classList.toggle('is-scrollable', overflow);
+        wrap.classList.toggle('at-end', overflow && display.scrollLeft + display.clientWidth >= display.scrollWidth - 1);
+        wrap.classList.toggle('at-start', display.scrollLeft <= 1);
+      };
+      display.addEventListener('scroll', update, { passive: true });
+      update();
+      new ResizeObserver(update).observe(display);
+    }
+  }
+</script>
+
+<style is:global>
+  .math-block { position: relative; }
+  .math-block.is-scrollable:not(.at-end)::after,
+  .math-block.is-scrollable:not(.at-start)::before {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 2.5rem;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .math-block.is-scrollable:not(.at-end)::after { right: -0.25em; background: linear-gradient(to right, transparent, var(--bg-card)); }
+  .math-block.is-scrollable:not(.at-start)::before { left: -0.25em; background: linear-gradient(to left, transparent, var(--bg-card)); }
+
+  .math-copy {
+    position: absolute;
+    top: 0.1rem; right: 0;
+    z-index: 2;
+    padding: 0.1em 0.5em;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+    background: var(--bg-card);
+    color: var(--text-light);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    line-height: 1.5;
+    opacity: 0;
+    transition: opacity 0.15s ease, color 0.15s ease;
+  }
+  .math-block:hover .math-copy, .math-copy:focus-visible { opacity: 1; }
+  .math-copy:hover { color: var(--text-strong); border-color: var(--text-light); }
+  @media (hover: none) { .math-copy { opacity: 1; } }
+
+  .math-toast {
+    position: fixed;
+    left: 50%; bottom: 1.5rem;
+    transform: translateX(-50%) translateY(0.5rem);
+    padding: 0.5em 1em;
+    border-radius: 9999px;
+    background: var(--text-strong);
+    color: var(--bg);
+    font-size: 0.9rem;
+    opacity: 0;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 50;
+    pointer-events: none;
+  }
+  .math-toast.is-visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>

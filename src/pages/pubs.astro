@@ -1,0 +1,76 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PubCard from '../components/PubCard.astro';
+import { groupByYear } from '../lib/pubs';
+
+const groups = groupByYear(await getCollection('pubs'));
+---
+
+<BaseLayout title="Publications" description="Great works are not done by strength, but by perseverance." lang="en">
+  <section class="section">
+    <div class="container">
+      <div class="has-text-centered page-header">
+        <h1 class="title is-2">Publications</h1>
+        <p class="subtitle is-4">Great works are not done by strength, but by perseverance.</p>
+      </div>
+      <div class="pub-timeline">
+        {groups.map(({ year, pubs }) => (
+          <section class="pub-year" aria-labelledby={`year-${year}`}>
+            <h2 class="year-label" id={`year-${year}`}>{year}</h2>
+            <div class="pub-year-cards">
+              {pubs.map(({ data }) => <PubCard pub={data} />)}
+            </div>
+          </section>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .pub-timeline { max-width: 960px; margin-inline: auto; }
+  .pub-year {
+    display: grid;
+    grid-template-columns: 5.5rem minmax(0, 1fr);
+    column-gap: 1.75rem;
+  }
+  .pub-year + .pub-year { margin-top: 0.5rem; }
+  .year-label {
+    position: sticky;
+    top: calc(var(--navbar-height) + 1.25rem);
+    align-self: start;
+    margin: 0;
+    padding-top: 1.1rem;
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--text-light);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .pub-year-cards {
+    position: relative;
+    padding: 0 0 1.5rem 1.75rem;
+    border-left: 2px solid var(--border-soft);
+  }
+  /* Dot on the rail, level with the year label */
+  .pub-year-cards::before {
+    content: '';
+    position: absolute;
+    left: -7px;
+    top: 1.45rem;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--text-light);
+  }
+  .pub-year:last-child .pub-year-cards { padding-bottom: 0; }
+  @media (max-width: 767px) {
+    .pub-year { grid-template-columns: minmax(0, 1fr); }
+    .year-label { position: static; text-align: left; padding: 0 0 0.75rem; font-size: 1.35rem; }
+    .pub-year-cards { border-left: 0; padding-left: 0; }
+    .pub-year-cards::before { display: none; }
+    .pub-year + .pub-year { margin-top: 2rem; }
+  }
+</style>

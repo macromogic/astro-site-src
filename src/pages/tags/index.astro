@@ -1,0 +1,6 @@
+---
+import TermIndexPage from '../../components/TermIndexPage.astro';
+import { getPosts, indexTags } from '../../lib/posts';
+const index = indexTags(await getPosts(import.meta.env.DEV));
+---
+<TermIndexPage index={index} />

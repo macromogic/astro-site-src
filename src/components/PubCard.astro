@@ -1,0 +1,36 @@
+---
+import { Icon } from 'astro-icon/components';
+import Authors from './Authors.astro';
+import PubActions from './PubActions.astro';
+import VenueBadge from './VenueBadge.astro';
+import { isEqualContributionNote, type Pub } from '../lib/pubs';
+import { slugifyTerm } from '../lib/format';
+
+interface Props { pub: Pub['data'] }
+const { pub } = Astro.props;
+const note = isEqualContributionNote(pub.comment) ? undefined : pub.comment;
+---
+
+<article class="pubcard" id={slugifyTerm(pub.title)}>
+  <div class="pub-title-row">
+    <h2 class="title has-text-dark" id={`${slugifyTerm(pub.title)}-title`}>{pub.title}</h2>
+    <VenueBadge venue={pub.venue} />
+  </div>
+  <div class="meta-line"><span class="icon"><Icon name="fa6-solid:user" /></span><span><Authors authors={pub.authors} /></span></div>
+  {pub.book && <div class="meta-line"><span class="icon"><Icon name="fa6-solid:book" /></span><span>{pub.book}</span></div>}
+  {note && <div class="meta-line comment"><span>{note}</span></div>}
+  <PubActions pub={pub} class="pub-actions" />
+</article>
+
+<style>
+  .pubcard { scroll-margin-top: calc(var(--navbar-height) + 1rem); }
+  .pub-title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem 1.25rem; margin-bottom: 0.6rem; }
+  .pub-title-row .title { margin-bottom: 0; flex: 1 1 auto; min-width: 0; }
+  .pub-title-row :global(.badges) { flex: none; margin-top: 0.3rem; }
+  .comment { font-size: 0.9em; }
+  .pub-actions { margin-top: 0.9rem; }
+  @media (max-width: 599px) {
+    .pub-title-row { flex-direction: column-reverse; align-items: flex-start; gap: 0.5rem; }
+    .pub-title-row :global(.badges) { margin-top: 0; }
+  }
+</style>

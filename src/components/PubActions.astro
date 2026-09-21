@@ -1,0 +1,17 @@
+---
+/** Paper / Website / Code buttons for a publication. */
+import Button from './Button.astro';
+import type { Pub } from '../lib/pubs';
+
+interface Props { pub: Pub['data']; class?: string }
+const { pub, class: className } = Astro.props;
+const codeIcon = pub.code && /github\.com/.test(pub.code) ? 'fa6-brands:github' : pub.code && /gitlab\.com/.test(pub.code) ? 'fa6-brands:gitlab' : 'fa6-solid:code';
+---
+
+{(pub.url || pub.website || pub.code) && (
+  <div class:list={['buttons', className]}>
+    {pub.url && <Button href={pub.url} size="small" color="accent" icon="fa6-solid:file-lines">Paper</Button>}
+    {pub.website && <Button href={pub.website} size="small" icon="fa6-solid:globe">Website</Button>}
+    {pub.code && <Button href={pub.code} size="small" icon={codeIcon}>Code</Button>}
+  </div>
+)}

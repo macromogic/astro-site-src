@@ -1,0 +1,21 @@
+---
+import { site } from '../site.config';
+
+interface Props { authors: string[] }
+const { authors } = Astro.props;
+const me = site.author.name;
+// "Weijie Huang*" -> name + superscript marker with a tooltip.
+const parsed = authors.map((a) => {
+  const m = a.match(/^(.*?)(\*+)$/);
+  return { name: m ? m[1] : a, marker: m ? m[2] : '' };
+});
+---
+
+{parsed.map((a, i) => (
+  <>{i > 0 && ', '}<span class:list={['author', { me: a.name.includes(me) }]}>{a.name}{a.marker && <sup class="marker" title="Equal contribution">{a.marker}</sup>}</span></>
+))}
+
+<style>
+  .author.me { color: var(--text-strong); font-weight: 700; }
+  .marker { font-size: 0.7em; line-height: 0; margin-left: 0.05em; cursor: help; }
+</style>

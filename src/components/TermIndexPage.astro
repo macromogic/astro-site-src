@@ -1,0 +1,38 @@
+---
+import { Icon } from 'astro-icon/components';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import type { TermIndex } from '../lib/posts';
+
+interface Props { index: TermIndex }
+const { index } = Astro.props;
+const terms = [...index.values()].sort((a, b) => b.posts.length - a.posts.length || a.name.localeCompare(b.name));
+const max = Math.max(1, ...terms.map((t) => t.posts.length));
+// Scale font size with post count, between 0.9rem and 1.6rem.
+const sizeFor = (n: number) => (0.9 + (0.7 * (n - 1)) / Math.max(1, max - 1)).toFixed(2) + 'rem';
+---
+
+<BaseLayout title="Tags" noindex>
+  <section class="section">
+    <div class="container has-text-centered">
+      <h1 class="title is-2 icon-text" style="justify-content: center; gap: 0.35em">
+        <Icon name="fa6-solid:tags" /><span>Tags</span>
+      </h1>
+      <p class="subtitle is-4 page-header">{terms.length} tags · {[...index.values()].reduce((n, t) => n + t.posts.length, 0)} taggings</p>
+      <ul class="tag-cloud">
+        {terms.map((t) => (
+          <li>
+            <a class="tag-pill" href={`/tags/${t.slug}/`} style={`font-size: ${sizeFor(t.posts.length)}`}>
+              <Icon name="fa6-solid:tag" /><span>{t.name}</span><span class="count">{t.posts.length}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .tag-cloud { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.75rem 0.9rem; max-width: 40rem; margin-inline: auto; }
+  .tag-cloud .tag-pill { padding: 0.3em 0.9em; }
+  .count { font-size: 0.75em; opacity: 0.7; margin-left: 0.15em; }
+</style>

@@ -1,0 +1,19 @@
+---
+import PostsIndex from '../../../components/PostsIndex.astro';
+import { getPosts } from '../../../lib/posts';
+import { site } from '../../../site.config';
+
+export async function getStaticPaths() {
+  const posts = await getPosts(import.meta.env.DEV);
+  const total = Math.ceil(posts.length / site.postsPerPage);
+  return Array.from({ length: Math.max(0, total - 1) }, (_, i) => {
+    const page = i + 2;
+    const start = (page - 1) * site.postsPerPage;
+    return { params: { page: String(page) }, props: { posts: posts.slice(start, start + site.postsPerPage), page, total } };
+  });
+}
+
+const { posts, page, total } = Astro.props;
+---
+
+<PostsIndex posts={posts} current={page} total={total} />

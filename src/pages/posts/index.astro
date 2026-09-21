@@ -1,0 +1,10 @@
+---
+import PostsIndex from '../../components/PostsIndex.astro';
+import { getPosts } from '../../lib/posts';
+import { site } from '../../site.config';
+
+const posts = await getPosts(import.meta.env.DEV);
+const total = Math.max(1, Math.ceil(posts.length / site.postsPerPage));
+---
+
+<PostsIndex posts={posts.slice(0, site.postsPerPage)} current={1} total={total} />

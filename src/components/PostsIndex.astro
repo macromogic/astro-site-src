@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from './PostCard.astro';
+import Pagination from './Pagination.astro';
+import type { Post } from '../lib/posts';
+
+interface Props { posts: Post[]; current: number; total: number }
+const { posts, current, total } = Astro.props;
+const title = current > 1 ? `Posts (page ${current})` : 'Posts';
+---
+
+<BaseLayout title={title} description="Blog posts accumulated over the time." noindex>
+  <section class="section">
+    <div class="container">
+      <div class="has-text-centered page-header">
+        <h1 class="title is-2">Posts</h1>
+        <p class="subtitle is-4">Blog posts accumulated over the time.</p>
+      </div>
+      <div class="narrow">
+        {posts.map((post) => <PostCard post={post} />)}
+      </div>
+    </div>
+  </section>
+  <Pagination current={current} total={total} base="/posts" />
+</BaseLayout>
+

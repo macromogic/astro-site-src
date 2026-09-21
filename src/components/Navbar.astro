@@ -1,0 +1,50 @@
+---
+import { Icon } from 'astro-icon/components';
+import { site } from '../site.config';
+
+const path = Astro.url.pathname;
+const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+---
+
+<nav class="navbar" aria-label="site navigation">
+  <div class="container">
+    <div class="navbar-brand">
+      <a class="navbar-item brand" href="/">{site.title}</a>
+      <button class="navbar-burger" id="nav-burger" aria-label="menu" aria-expanded="false" aria-controls="nav-menu">
+        <Icon name="fa6-solid:bars" />
+      </button>
+    </div>
+    <div class="navbar-menu" id="nav-menu">
+      {site.nav.map((item) => (
+        <a class:list={['navbar-item', { 'is-active': isActive(item.href) }]} href={item.href}>{item.label}</a>
+      ))}
+      <button class="navbar-item icon-only" id="nav-search" title="Search" aria-label="Search">
+        <Icon name="fa6-solid:magnifying-glass" />
+      </button>
+      <button class="navbar-item icon-only" id="theme-toggle" title="Toggle dark theme" aria-label="Toggle dark theme">
+        <Icon name="fa6-solid:circle-half-stroke" />
+      </button>
+    </div>
+  </div>
+</nav>
+
+<script>
+  const burger = document.getElementById('nav-burger');
+  const menu = document.getElementById('nav-menu');
+  burger?.addEventListener('click', () => {
+    const open = menu?.classList.toggle('is-active') ?? false;
+    burger.setAttribute('aria-expanded', String(open));
+  });
+
+  const toggle = document.getElementById('theme-toggle');
+  const root = document.documentElement;
+  const label = () =>
+    toggle?.setAttribute('title', root.dataset.theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
+  label();
+  toggle?.addEventListener('click', () => {
+    const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    root.dataset.theme = next;
+    try { localStorage.setItem('theme', next); } catch {}
+    label();
+  });
+</script>

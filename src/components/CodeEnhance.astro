@@ -1,0 +1,67 @@
+---
+/** Adds a language label and a copy button to every Shiki code block. No-op on pages without code. */
+---
+
+<script>
+  const blocks = document.querySelectorAll<HTMLPreElement>('pre.astro-code');
+  for (const pre of blocks) {
+    if (pre.parentElement?.classList.contains('code-block')) continue;
+    const wrap = document.createElement('div');
+    wrap.className = 'code-block';
+    pre.replaceWith(wrap);
+    wrap.append(pre);
+
+    const lang = pre.dataset.language;
+    if (lang && lang !== 'plaintext' && lang !== 'text') {
+      const label = document.createElement('span');
+      label.className = 'code-lang';
+      label.textContent = lang;
+      wrap.append(label);
+    }
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'code-copy';
+    btn.title = 'Copy code';
+    btn.setAttribute('aria-label', 'Copy code');
+    btn.textContent = 'Copy';
+    btn.addEventListener('click', async () => {
+      const text = pre.querySelector('code')?.innerText ?? pre.innerText;
+      try {
+        await navigator.clipboard.writeText(text);
+        btn.textContent = 'Copied';
+      } catch {
+        btn.textContent = 'Failed';
+      }
+      setTimeout(() => { btn.textContent = 'Copy'; }, 1600);
+    });
+    wrap.append(btn);
+  }
+</script>
+
+<style is:global>
+  .code-block { position: relative; margin-bottom: 1em; }
+  .code-block > pre { margin: 0; }
+  .code-lang, .code-copy {
+    position: absolute;
+    top: 0.45rem;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    line-height: 1.5;
+    padding: 0.1em 0.5em;
+    border-radius: var(--radius-small);
+    color: var(--text-light);
+    transition: opacity 0.15s ease, color 0.15s ease;
+  }
+  .code-lang { right: 0.6rem; text-transform: lowercase; letter-spacing: 0.02em; pointer-events: none; }
+  .code-copy {
+    right: 0.6rem;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    opacity: 0;
+  }
+  .code-block:hover .code-lang { opacity: 0; }
+  .code-block:hover .code-copy, .code-copy:focus-visible { opacity: 1; }
+  .code-copy:hover { color: var(--text-strong); border-color: var(--text-light); }
+  @media (hover: none) { .code-copy { opacity: 1; } .code-lang { display: none; } }
+</style>

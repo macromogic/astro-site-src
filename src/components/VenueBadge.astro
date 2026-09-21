@@ -1,0 +1,35 @@
+---
+/** Short venue pill ("CCS '26") with an optional "To appear" tag for forthcoming work. */
+interface Props { venue?: string; forthcoming?: boolean }
+const { venue, forthcoming = false } = Astro.props;
+---
+
+{(venue || forthcoming) && (
+  <span class="badges">
+    {venue && <span class="venue-badge">{venue}</span>}
+    {forthcoming && <span class="venue-badge is-soon" title="Accepted, not yet published">To appear</span>}
+  </span>
+)}
+
+<style>
+  .badges { display: inline-flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; }
+  .venue-badge {
+    display: inline-block;
+    padding: 0.2em 0.65em;
+    border: 1px solid var(--border);
+    border-radius: 9999px;
+    background: var(--bg-soft);
+    color: var(--text-strong);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    line-height: 1.4;
+    white-space: nowrap;
+  }
+  .venue-badge.is-soon {
+    background: color-mix(in srgb, var(--info) 12%, transparent);
+    border-color: color-mix(in srgb, var(--info) 40%, transparent);
+    color: var(--info);
+    font-weight: 600;
+  }
+</style>

@@ -1,0 +1,116 @@
+---
+/**
+ * Profile + contact card for the home page: portrait, name, role, tagline,
+ * affiliation/address/email rows, and the social icon row.
+ */
+import { Icon } from 'astro-icon/components';
+import { Image } from 'astro:assets';
+import SocialLinks from './SocialLinks.astro';
+import { site } from '../site.config';
+import photo from '../assets/photo.jpg';
+
+const c = site.contact;
+// Human-readable obfuscation: "wh25 [at] iu [dot] edu". No mailto link, no raw address in the HTML.
+const obfuscatedEmail = (c.email ?? '').replace('@', ' [at] ').replace(/\./g, ' [dot] ');
+---
+
+<aside class="profile-card" id="contact" aria-label="Profile and contact">
+  <header class="profile-head">
+    <Image
+      class="avatar"
+      src={photo}
+      alt={`Portrait of ${site.author.name}`}
+      width={176}
+      height={176}
+      densities={[1, 2]}
+      format="webp"
+      fit="cover"
+      loading="eager"
+    />
+    <div class="profile-id">
+      <h1 class="profile-name">{site.author.name}</h1>
+      {c.role && <p class="profile-role">{c.role}</p>}
+      <p class="profile-tagline">{site.description}</p>
+    </div>
+  </header>
+
+  <ul class="contact-rows">
+    {c.affiliation.length > 0 && (
+      <li>
+        <span class="icon"><Icon name="fa6-solid:building-columns" /></span>
+        <span>{c.affiliation.map((line) => <span class="line">{line}</span>)}</span>
+      </li>
+    )}
+    {c.address.length > 0 && (
+      <li>
+        <span class="icon"><Icon name="fa6-solid:location-dot" /></span>
+        <span>
+          {c.address.map((line) => <span class="line">{line}</span>)}
+        </span>
+      </li>
+    )}
+    {c.email && (
+      <li>
+        <span class="icon"><Icon name="fa6-regular:envelope" /></span>
+        <span class="contact-email" translate="no">{obfuscatedEmail}</span>
+      </li>
+    )}
+  </ul>
+
+  <div class="contact-social">
+    <SocialLinks compact />
+  </div>
+</aside>
+
+<style>
+  .profile-card {
+    scroll-margin-top: calc(var(--navbar-height) + 1.5rem);
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 1.75rem 1.5rem 1.6rem;
+    color: var(--text);
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+
+  /* Identity block: centred portrait, name, role, tagline */
+  .profile-head { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1rem; }
+  .avatar {
+    width: 11rem; height: 11rem; max-width: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 0 0 4px var(--bg-card), 0 0 0 5px var(--border-soft);
+  }
+  .profile-name { font-size: 1.5rem; font-weight: 700; color: var(--text-strong); line-height: 1.2; }
+  .profile-role { color: var(--text); margin-top: 0.3rem; }
+  .profile-tagline { color: var(--text-light); font-style: italic; margin-top: 0.15rem; }
+
+  .contact-rows {
+    list-style: none;
+    margin: 1.25rem 0 0;
+    padding-top: 1.1rem;
+    border-top: 1px solid var(--border-soft);
+    display: grid;
+    gap: 0.8rem;
+  }
+  .contact-rows li { display: flex; gap: 0.7rem; align-items: flex-start; }
+  .contact-rows .icon { flex: none; width: 1.25em; height: 1.55em; color: var(--text-light); }
+  .line { display: block; }
+  .contact-email { color: var(--text-strong); }
+  .contact-social { margin-top: 1.1rem; padding-top: 0.9rem; border-top: 1px solid var(--border-soft); }
+  .contact-social :global(.social.is-compact) { justify-content: center; gap: 0.15rem; }
+
+  /* Tablet: card spans the column, so go horizontal. */
+  @media (min-width: 600px) and (max-width: 1023px) {
+    .profile-card { padding: 1.75rem 1.75rem 1.5rem; }
+    .profile-head { flex-direction: row; text-align: left; align-items: center; gap: 1.5rem; }
+    .avatar { width: 8rem; height: 8rem; }
+    .contact-rows { grid-template-columns: 1fr 1fr; column-gap: 2rem; }
+    .contact-rows li:last-child:nth-child(odd) { grid-column: 1 / -1; }
+    .contact-social :global(.social.is-compact) { justify-content: flex-start; gap: 0.35rem; margin-left: -0.4rem; }
+  }
+  @media (max-width: 599px) {
+    .avatar { width: 9rem; height: 9rem; }
+  }
+</style>

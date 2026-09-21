@@ -1,0 +1,25 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface Props { current: number; total: number; base: string }
+const { current, total, base } = Astro.props;
+const hrefFor = (n: number) => (n === 1 ? `${base}/` : `${base}/page/${n}/`);
+---
+
+{total > 1 && (
+  <nav class="pagination" role="navigation" aria-label="pagination">
+    <a class="pagination-previous" href={current > 1 ? hrefFor(current - 1) : undefined} aria-disabled={current === 1 ? 'true' : undefined}>
+      <Icon name="fa6-solid:angles-left" /> Previous
+    </a>
+    <a class="pagination-next" href={current < total ? hrefFor(current + 1) : undefined} aria-disabled={current === total ? 'true' : undefined}>
+      Next page <Icon name="fa6-solid:angles-right" />
+    </a>
+    <ul class="pagination-list">
+      {Array.from({ length: total }, (_, i) => i + 1).map((n) => (
+        <li>
+          <a class:list={['pagination-link', { 'is-current': n === current }]} href={hrefFor(n)} aria-label={`Goto page ${n}`} aria-current={n === current ? 'page' : undefined}>{n}</a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+)}

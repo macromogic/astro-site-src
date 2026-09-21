@@ -1,0 +1,40 @@
+---
+import PostMeta from './PostMeta.astro';
+import Taxonomy from './Taxonomy.astro';
+import Button from './Button.astro';
+import { renderExcerpt, type Post } from '../lib/posts';
+import { autoSpace } from '../lib/cjk-spacing.mjs';
+
+interface Props { post: Post }
+const { post } = Astro.props;
+const href = `/posts/${post.id}/`;
+const excerpt = await renderExcerpt(post);
+---
+
+<article class:list={['box', 'post-card', { 'is-draft': post.data.draft }]} lang={post.data.lang}>
+  <h2 class="title">
+    <a class="has-text-dark" href={href}>{autoSpace(post.data.title)}</a>
+    {post.data.draft && <span class="badge is-draft" title="Unpublished draft, visible in dev only">Draft</span>}
+  </h2>
+  {post.data.description && <p class="subtitle">{post.data.description}</p>}
+  <PostMeta post={post} />
+  <div class="content excerpt">
+    <Fragment set:html={excerpt} />
+  </div>
+  <div class="card-foot">
+    <Taxonomy tags={post.data.tags} legacy={post.data.legacy} />
+    <Button href={href} variant="text" size="small" color="accent" iconRight="fa6-solid:arrow-right" class="read-more-btn">Read more</Button>
+  </div>
+</article>
+
+<style>
+  .post-card .title { text-wrap: pretty; }
+  .post-card.is-draft { box-shadow: none; border: 1px dashed var(--border); background: transparent; }
+  .post-card.is-draft .title a, .post-card.is-draft .excerpt { color: var(--text-light); }
+  .post-card.is-draft .excerpt { opacity: 0.85; }
+  .excerpt { font-size: 0.95rem; color: var(--text); }
+  .excerpt :global(p:last-child) { margin-bottom: 0; }
+  .card-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1rem; margin-top: 1rem; }
+  .card-foot :global(.taxonomy) { flex: 1 1 auto; margin: 0; }
+  .card-foot :global(.read-more-btn) { margin-right: -0.5em; margin-left: auto; }
+</style>

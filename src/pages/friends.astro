@@ -1,0 +1,37 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const friends = (await getCollection('friends')).sort((a, b) => a.data.name.localeCompare(b.data.name));
+const host = (url: string) => new URL(url).host.replace(/^www\./, '');
+---
+
+<BaseLayout title="Friends" description="Check out these amazing folks!" lang="en" noindex>
+  <section class="section">
+    <div class="container">
+      <div class="has-text-centered page-header">
+        <h1 class="title is-2">Friends</h1>
+        <p class="subtitle is-4">Check out these amazing folks!</p>
+      </div>
+      <ul class="friend-grid narrow">
+        {friends.map(({ data }) => (
+          <li>
+            <a class="friendcard" href={data.link} target="_blank" rel="noopener">
+              <span class="friend-name">{data.name}</span>
+              <span class="friend-note">{data.note ?? host(data.link)}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .friend-grid { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 1rem; }
+  .friendcard { display: flex; flex-direction: column; gap: 0.15rem; padding: 1rem 1.5rem; border-radius: var(--radius); margin: 0; height: 100%; }
+  .friendcard:not(:last-child) { margin-bottom: 0; }
+  .friend-name { font-size: 1.15rem; font-weight: 700; color: var(--text-strong); }
+  .friend-note { font-size: 0.85rem; color: var(--text-light); overflow-wrap: anywhere; }
+  .friendcard:hover .friend-name { color: var(--link); }
+</style>

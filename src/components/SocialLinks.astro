@@ -1,0 +1,26 @@
+---
+import { Icon } from 'astro-icon/components';
+import { site } from '../site.config';
+
+interface Props { compact?: boolean }
+const { compact = false } = Astro.props;
+const s = site.social;
+const links = [
+  { title: 'LinkedIn', href: `https://www.linkedin.com/in/${s.linkedin}`, icon: 'fa6-brands:linkedin', color: '#0a66c2' },
+  { title: 'Discord', href: `https://discordapp.com/users/${s.discord}`, icon: 'fa6-brands:discord', color: '#5865f2' },
+  { title: 'GitHub', href: `https://github.com/${s.github}`, icon: 'fa6-brands:github', color: 'var(--text-strong)' },
+  { title: 'GitLab', href: `https://gitlab.com/${s.gitlab}`, icon: 'fa6-brands:gitlab', color: '#e24329' },
+  { title: 'Google Scholar', href: `https://scholar.google.com/citations?user=${s.googleScholar}`, icon: 'academicons:google-scholar', color: '#4285f4' },
+  { title: 'ORCiD', href: `https://orcid.org/${s.orcid}`, icon: 'fa6-brands:orcid', color: '#a6ce39' },
+  { title: 'Bilibili', href: `https://space.bilibili.com/${s.bilibili}`, icon: 'fa6-brands:bilibili', color: '#00aeec' },
+  { title: 'RSS Feed', href: '/atom.xml', icon: 'fa6-solid:rss', color: '#f26522' },
+];
+---
+
+<p class:list={['social', { 'is-compact': compact }]}>
+  {links.map((l) => (
+    <a href={l.href} title={l.title} aria-label={l.title} target="_blank" rel="noopener me" style={`--brand: ${l.color}`}>
+      <Icon name={l.icon} />
+    </a>
+  ))}
+</p>

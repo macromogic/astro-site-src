@@ -1,0 +1,69 @@
+---
+/**
+ * Reusable button / link-button.
+ *
+ *   <Button href="/cv.pdf" icon="fa6-solid:file-pdf">CV</Button>
+ *   <Button variant="filled" color="primary" iconRight="fa6-solid:arrow-right">Read more</Button>
+ *   <Button variant="text" size="small" onclick="...">Copy</Button>
+ *
+ * Renders an <a> when `href` is given, otherwise a <button>. Styles live in global.css (.button*).
+ */
+import type { HTMLAttributes } from 'astro/types';
+import { Icon } from 'astro-icon/components';
+
+interface Props extends HTMLAttributes<'a'>, Omit<HTMLAttributes<'button'>, 'type'> {
+  href?: string;
+  variant?: 'outlined' | 'filled' | 'text';
+  color?: 'default' | 'primary' | 'accent';
+  size?: 'small' | 'normal' | 'large';
+  rounded?: boolean;
+  fullwidth?: boolean;
+  /** Iconify name, e.g. "fa6-solid:house"; placed before the label. */
+  icon?: string;
+  /** Iconify name placed after the label. */
+  iconRight?: string;
+  /** Open in a new tab (adds rel="noopener"). Defaults to true for absolute http(s) URLs. */
+  external?: boolean;
+  type?: 'button' | 'submit' | 'reset';
+}
+
+const {
+  href,
+  variant = 'outlined',
+  color = 'default',
+  size = 'normal',
+  rounded = false,
+  fullwidth = false,
+  icon,
+  iconRight,
+  external = typeof href === 'string' && /^https?:\/\//.test(href),
+  type = 'button',
+  class: className,
+  ...rest
+} = Astro.props;
+
+const classes = [
+  'button',
+  className,
+  {
+    'is-filled': variant === 'filled',
+    'is-text': variant === 'text',
+    'is-primary': color === 'primary',
+    'is-accent': color === 'accent',
+    'is-small': size === 'small',
+    'is-large': size === 'large',
+    'is-rounded': rounded,
+    'is-fullwidth': fullwidth,
+  },
+];
+---
+
+{href ? (
+  <a href={href} class:list={classes} target={external ? '_blank' : undefined} rel={external ? 'noopener' : undefined} {...rest}>
+    {icon && <Icon name={icon} />}<span><slot /></span>{iconRight && <Icon name={iconRight} />}
+  </a>
+) : (
+  <button type={type} class:list={classes} {...rest}>
+    {icon && <Icon name={icon} />}<span><slot /></span>{iconRight && <Icon name={iconRight} />}
+  </button>
+)}

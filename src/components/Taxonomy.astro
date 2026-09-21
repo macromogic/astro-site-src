@@ -1,0 +1,24 @@
+---
+import { Icon } from 'astro-icon/components';
+import { slugifyTerm } from '../lib/format';
+
+interface Props { tags: string[]; legacy?: boolean }
+const { tags, legacy = false } = Astro.props;
+---
+
+{(tags.length > 0 || legacy) && (
+  <div class="meta taxonomy">
+    <span class="tag-list">
+      {tags.map((t) => (
+        <a class="tag-pill" href={`/tags/${slugifyTerm(t)}/`} rel="tag">
+          <Icon name="fa6-solid:tag" /><span>{t}</span>
+        </a>
+      ))}
+    </span>
+    {legacy && (
+      <span class="badge is-muted" title="An old post kept for the record; details may be outdated">
+        <Icon name="fa6-solid:box-archive" /><span>Legacy</span>
+      </span>
+    )}
+  </div>
+)}

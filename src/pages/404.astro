@@ -1,0 +1,16 @@
+---
+import Button from '../components/Button.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="404" lang="en" noindex>
+  <section class="section">
+    <div class="container has-text-centered">
+      <h1 class="title is-2">404 Oops!</h1>
+      <p class="subtitle is-4">It seems you are looking for something that I don't have.</p>
+      <p class="buttons is-centered" style="margin-top: 3rem">
+        <Button href="/" icon="fa6-solid:house">Back home</Button>
+      </p>
+    </div>
+  </section>
+</BaseLayout>

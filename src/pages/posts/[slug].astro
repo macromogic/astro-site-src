@@ -1,0 +1,92 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostMeta from '../../components/PostMeta.astro';
+import Taxonomy from '../../components/Taxonomy.astro';
+import Toc from '../../components/Toc.astro';
+import Button from '../../components/Button.astro';
+import { site } from '../../site.config';
+import { getPosts } from '../../lib/posts';
+import { autoSpace } from '../../lib/cjk-spacing.mjs';
+
+export async function getStaticPaths() {
+  const posts = await getPosts(import.meta.env.DEV); // newest first; drafts previewable in dev
+  return posts.map((post, i) => ({
+    params: { slug: post.id },
+    props: { post, newer: posts[i - 1], older: posts[i + 1] },
+  }));
+}
+
+const { post, newer, older } = Astro.props;
+const { Content, headings } = await render(post);
+---
+
+<BaseLayout
+  title={autoSpace(post.data.title)}
+  description={post.data.description}
+  lang={post.data.lang}
+  type="article"
+  publishedTime={post.data.date}
+  tags={post.data.tags}
+>
+  <section class="section">
+    <div class:list={['container', 'post-grid', 'post-page', { 'has-toc': post.data.toc && headings.length > 0 }]}>
+      {post.data.toc && headings.length > 0 && (
+        <details class="toc-inline">
+          <summary>Contents</summary>
+          <Toc headings={headings} compact />
+        </details>
+      )}
+      <article class="box">
+        <h1 class="title" data-pagefind-meta="title">{autoSpace(post.data.title)}{post.data.draft && <span class="badge is-draft">Draft</span>}</h1>
+        {post.data.description && <p class="subtitle">{post.data.description}</p>}
+        <div class="post-header" data-pagefind-ignore>
+          <PostMeta post={post} />
+          <Taxonomy tags={post.data.tags} legacy={post.data.legacy} />
+        </div>
+        <div class="content mt-2">
+          <Content />
+        </div>
+        <footer class="post-foot" data-pagefind-ignore>
+          <Taxonomy tags={post.data.tags} legacy={post.data.legacy} />
+          <Button href="/posts/" variant="text" size="small" icon="fa6-solid:arrow-left">All posts</Button>
+        </footer>
+      </article>
+      {post.data.toc && (
+        <div class="toc-column" data-pagefind-ignore>
+          <Toc headings={headings} />
+        </div>
+      )}
+      {(newer || older) && (
+        <nav class="post-nav" aria-label="adjacent posts" data-pagefind-ignore>
+          {newer ? (
+            <Button href={`/posts/${newer.id}/`} rel="next" icon="fa6-solid:circle-arrow-left">{autoSpace(newer.data.title)}</Button>
+          ) : <span class="spacer" />}
+          {older ? (
+            <Button href={`/posts/${older.id}/`} rel="prev" iconRight="fa6-solid:circle-arrow-right">{autoSpace(older.data.title)}</Button>
+          ) : <span class="spacer" />}
+        </nav>
+      )}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .box .title { font-size: 2rem; text-wrap: pretty; }
+  .post-foot {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem 1rem;
+    margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border-soft);
+  }
+  .post-foot :global(.taxonomy) { margin: 0; flex: 1 1 auto; }
+  .toc-inline {
+    grid-area: toc-inline;
+    border: 1px solid var(--border-soft); border-radius: var(--radius);
+    background: var(--bg-card); padding: 0.75rem 1rem; margin-bottom: 1.25rem;
+  }
+  .toc-inline summary { cursor: pointer; font-weight: 700; color: var(--text-strong); list-style: none; display: flex; align-items: center; gap: 0.5em; }
+  .toc-inline summary::before { content: '›'; display: inline-block; transition: transform 0.15s ease; color: var(--text-light); }
+  .toc-inline[open] summary::before { transform: rotate(90deg); }
+  .toc-inline summary::-webkit-details-marker { display: none; }
+  .toc-inline :global(.toc) { margin-top: 0.75rem; font-size: 0.9rem; }
+  @media (min-width: 1024px) { .toc-inline { display: none; } }
+</style>

@@ -1,17 +1,91 @@
 ---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Authors from '../components/Authors.astro';
+import Button from '../components/Button.astro';
+import ContactCard from '../components/ContactCard.astro';
+import { Content as Bio } from '../content/home.md';
+import { site } from '../site.config';
+import PubActions from '../components/PubActions.astro';
+import VenueBadge from '../components/VenueBadge.astro';
+import { isEqualContributionNote, isForthcoming } from '../lib/pubs';
 
+const pubs = (await getCollection('pubs'))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 3);
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout lang="en">
+  <section class="section">
+    <div class="container">
+      <div class="home-grid">
+        <div class="content home-bio">
+          <Bio />
+        </div>
+        <div class="home-aside">
+          <ContactCard />
+        </div>
+        <div class="content home-pubs">
+          <div class="pubs-head">
+            <h3>Recent Publications</h3>
+            <Button href="/pubs/" size="small" iconRight="fa6-solid:arrow-right">All publications</Button>
+          </div>
+          {pubs.map(({ data: pub }) => (
+            <article class="pub">
+              <div class="pub-title-row">
+                <p class="pub-title">{pub.title}</p>
+                <VenueBadge venue={pub.venue} forthcoming={isForthcoming(pub.date)} />
+              </div>
+              <p class="pub-authors"><Authors authors={pub.authors} /></p>
+              {pub.comment && !isEqualContributionNote(pub.comment) && <p class="pub-note">{pub.comment}</p>}
+              <PubActions pub={pub} class="pub-actions" />
+            </article>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .home-grid {
+    display: grid;
+    grid-template-columns: 21rem minmax(0, 1fr);
+    grid-template-areas:
+      'aside bio'
+      'aside pubs';
+    gap: 0 3rem;
+    align-items: start;
+    max-width: 1080px;
+    margin-inline: auto;
+  }
+  .home-bio { grid-area: bio; min-width: 0; }
+  .home-bio :global(p:first-child) { margin-top: 0.25rem; }
+  .home-pubs { grid-area: pubs; min-width: 0; margin-top: 2rem; }
+  .home-aside { grid-area: aside; position: sticky; top: calc(var(--navbar-height) + 1.5rem); }
+  .pubs-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.5rem 1rem; margin-bottom: 1.75rem; }
+  .pubs-head :global(h3) { margin: 0; }
+  .pub { line-height: 1.55; padding-block: 1rem; }
+  .pub + .pub { border-top: 1px solid var(--border-soft); }
+  .pub:first-of-type { padding-top: 0; }
+  .pub-title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem 1rem; }
+  .pub-title { margin: 0; font-weight: 700; color: var(--text-strong); flex: 1 1 auto; min-width: 0; }
+  .pub-title-row :global(.badges) { flex: none; margin-top: 0.1rem; }
+  .pub-authors { margin: 0.3rem 0 0; color: var(--text-light); font-size: 0.95rem; }
+  .pub-note { margin: 0.2rem 0 0; color: var(--text-light); font-size: 0.9rem; }
+  .pub-actions { margin-top: 0.7rem; }
+  .pub :global(.button) { text-decoration: none; }
+  @media (max-width: 599px) {
+    .pub-title-row { flex-direction: column-reverse; align-items: flex-start; gap: 0.4rem; }
+  }
+  @media (max-width: 1023px) {
+    .home-grid {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: 'aside' 'bio' 'pubs';
+      max-width: 864px;
+      row-gap: 2.25rem;
+    }
+    .home-aside { position: static; }
+    .home-pubs { margin-top: 0; }
+  }
+</style>

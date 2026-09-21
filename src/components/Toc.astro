@@ -1,0 +1,58 @@
+---
+import type { MarkdownHeading } from 'astro';
+import { Icon } from 'astro-icon/components';
+import { autoSpace } from '../lib/cjk-spacing.mjs';
+
+interface Props { headings: MarkdownHeading[]; compact?: boolean }
+const { headings, compact = false } = Astro.props;
+
+type Node = MarkdownHeading & { children: MarkdownHeading[] };
+const tree: Node[] = [];
+for (const h of headings.filter((h) => h.depth === 2 || h.depth === 3)) {
+  if (h.depth === 2 || tree.length === 0) tree.push({ ...h, children: [] });
+  else tree[tree.length - 1]!.children.push(h);
+}
+---
+
+{tree.length > 0 && (
+  <nav class:list={['toc', { 'is-compact': compact }]} aria-label="Table of contents">
+    {!compact && <p class="heading">Contents</p>}
+    <ul class="toc-list">
+      {tree.map((h) => (
+        <li>
+          <a href={`#${h.slug}`} data-toc={h.slug}>{autoSpace(h.text)}</a>
+          {h.children.length > 0 && (
+            <ul>
+              {h.children.map((c) => (
+                <li><a href={`#${c.slug}`} data-toc={c.slug}>{autoSpace(c.text)}</a></li>
+              ))}
+            </ul>
+          )}
+        </li>
+      ))}
+    </ul>
+    {!compact && (
+      <a class="toc-top" href="#top"><Icon name="fa6-solid:arrow-up" /><span>Back to top</span></a>
+    )}
+  </nav>
+)}
+
+<script>
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('.toc a[data-toc]')];
+  const ids = [...new Set(links.map((a) => a.dataset.toc!))];
+  const targets = ids.map((id) => document.getElementById(id)).filter((el): el is HTMLElement => el !== null);
+  if (links.length && targets.length) {
+    const offset = 80;
+    let ticking = false;
+    const update = () => {
+      let active = targets[0]!.id;
+      for (const t of targets) if (t.getBoundingClientRect().top - offset <= 0) active = t.id;
+      links.forEach((a) => a.classList.toggle('is-active', a.dataset.toc === active));
+      ticking = false;
+    };
+    window.addEventListener('scroll', () => {
+      if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }, { passive: true });
+    update();
+  }
+</script>

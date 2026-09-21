@@ -1,0 +1,35 @@
+---
+import { Icon } from 'astro-icon/components';
+import { site } from '../site.config';
+import { getPosts } from '../lib/posts';
+
+const posts = await getPosts();
+const firstYear = Math.min(...posts.map((p) => p.data.date.getUTCFullYear()), new Date().getUTCFullYear());
+const thisYear = new Date().getUTCFullYear();
+const years = firstYear === thisYear ? `${thisYear}` : `${firstYear}–${thisYear}`;
+---
+
+<footer class="footer">
+  <p>
+    Built with
+    <span class="icon-text"><Icon name="fa6-solid:code" /><span>code</span></span>
+    and
+    <span class="icon-text"><Icon name="fa6-solid:heart" /><span>love</span></span>
+  </p>
+  <p>
+    Powered by
+    <a class="icon-text" href="https://astro.build" rel="noopener"><Icon name="fa6-solid:power-off" /><span>Astro</span></a>
+    <span class="sep" aria-hidden="true">·</span>
+    Inspired by
+    <a class="icon-text" href="https://github.com/RatanShreshtha/DeepThought" rel="noopener"><Icon name="fa6-regular:lightbulb" /><span>DeepThought</span></a>
+  </p>
+  <p class="copyright">
+    © {years} {site.author.name}
+    {site.repo && (
+      <>
+        <span class="sep" aria-hidden="true">·</span>
+        <a class="icon-text" href={site.repo} rel="noopener"><Icon name="fa6-brands:github" /><span>Source</span></a>
+      </>
+    )}
+  </p>
+</footer>
