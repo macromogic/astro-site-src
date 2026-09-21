@@ -12,7 +12,25 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^7.3.3"
+    "@astrojs/markdown-remark": "^7.3.1",
+    "@astrojs/sitemap": "^3.7.4",
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "@fontsource/libertinus-serif": "^5.3.0",
+    "@fontsource/noto-serif-sc": "^5.3.0",
+    "@iconify-json/academicons": "^1.2.4",
+    "@iconify-json/fa6-brands": "^1.2.6",
+    "@iconify-json/fa6-regular": "^1.2.4",
+    "@iconify-json/fa6-solid": "^1.2.4",
+    "astro": "^7.3.3",
+    "astro-icon": "^1.2.0",
+    "astro-pagefind": "^2.0.1",
+    "katex": "^0.16.47",
+    "rehype-katex": "^7.0.1",
+    "rehype-stringify": "^10.0.1",
+    "remark-math": "^6.0.0",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.1.2",
+    "unified": "^11.0.5"
   },
   "allowScripts": {
     "esbuild": true
