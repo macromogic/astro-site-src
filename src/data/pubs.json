@@ -1,0 +1,108 @@
+[
+    {
+        "title": "A Novel Memory Management for RISC-V Enclaves",
+        "venue": "HASP '21",
+        "authors": [
+            "Haonan Li*",
+            "Weijie Huang*",
+            "Mingde Ren",
+            "Hongyi Lu",
+            "Heming Cui",
+            "Fengwei Zhang"
+        ],
+        "book": "the 10th International Workshop on Hardware and Architectural Support for Security and Privacy (HASP)",
+        "date": "2021-10-18",
+        "comment": "*: Equal contribution",
+        "url": "https://dl.acm.org/doi/abs/10.1145/3505253.3505257"
+    },
+    {
+        "title": "Whole-Program Privilege and Compartmentalization Analysis with the Object-Encapsulation Model",
+        "venue": "SPW '23",
+        "authors": [
+            "Yudi Yang",
+            "Weijie Huang",
+            "Kelly Kaoudis",
+            "Nathan Dautenhahn"
+        ],
+        "book": "2023 IEEE Symposium on Security and Privacy Workshops (SPW)",
+        "date": "2023-05-25",
+        "url": "https://ieeexplore.ieee.org/abstract/document/10188652/",
+        "code": "https://gitlab.com/fierce-lab/objectencapsulation"
+    },
+    {
+        "title": "Endoprocess: Programmable and Extensible Subprocess Isolation",
+        "venue": "NSPW '23",
+        "authors": [
+            "Fangfei Yang",
+            "Weijie Huang",
+            "Kelly Kaoudis",
+            "Anjo Vahldiek-Oberwagner",
+            "Nathan Dautenhahn"
+        ],
+        "book": "the 2023 New Security Paradigms Workshop (NSPW)",
+        "date": "2023-09-18",
+        "url": "https://dl.acm.org/doi/abs/10.1145/3633500.3633507"
+    },
+    {
+        "title": "Endokernel: A Thread Safe Monitor for Lightweight Subprocess Isolation",
+        "venue": "USENIX Security '24",
+        "authors": [
+            "Fangfei Yang",
+            "Bumjin Im",
+            "Weijie Huang",
+            "Kelly Kaoudis",
+            "Anjo Vahldiek-Oberwagner",
+            "Chia-Che Tsai",
+            "Nathan Dautenhahn"
+        ],
+        "book": "the 33rd USENIX Security Symposium",
+        "date": "2024-08-13",
+        "url": "https://www.usenix.org/conference/usenixsecurity24/presentation/yang-fangfei"
+    },
+    {
+        "title": "Large Language Model-Powered Evolutionary Code Optimization on a Phylogenetic Tree",
+        "venue": "arXiv",
+        "authors": [
+            "Leyi Zhao*",
+            "Weijie Huang*",
+            "Yitong Guo",
+            "Jiang Bian",
+            "Chenghong Wang",
+            "Xuhong Zhang"
+        ],
+        "book": "arXiv Preprint",
+        "date": "2026-01-20",
+        "comment": "*: Equal contribution",
+        "url": "https://arxiv.org/abs/2601.14523",
+        "code": "https://github.com/annihi1ation/PhyloEvolve"
+    },
+    {
+        "title": "Hoss: Fast Oblivious Semantic Search with Heterogeneous GPU-CPU-TEE Architecture",
+        "venue": "CCS '26",
+        "authors": [
+            "Jianzhang Du*",
+            "Weijie Huang*",
+            "Chenghong Wang",
+            "Nicolas Tsagareli",
+            "Yukui Luo",
+            "XiaoFeng Wang",
+            "Zhongshu Gu"
+        ],
+        "book": "2026 ACM SIGSAC Conference on Computer and Communications Security",
+        "date": "2026-11-15",
+        "comment": "*: Equal contribution",
+        "code": "https://github.com/uu60/hoss"
+    },
+    {
+        "title": "Towards Practical Oblivious Relational Analytics with Heterogeneous TEE",
+        "venue": "S&P '27",
+        "authors": [
+            "Weijie Huang",
+            "Chenghong Wang",
+            "XiaoFeng Wang"
+        ],
+        "book": "2027 IEEE Symposium on Security and Privacy (S&P)",
+        "date": "2027-05-17",
+        "code": "https://github.com/macromogic/velodb"
+    }
+]
