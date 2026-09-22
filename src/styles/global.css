@@ -364,9 +364,11 @@ pre code { background: transparent; color: inherit; font-size: inherit; padding:
 .pagination-link.is-current { background: var(--link); border-color: var(--link); color: #fff; }
 .pagination [aria-disabled="true"] { opacity: 0.5; pointer-events: none; }
 
-.post-nav { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; }
+.post-nav { display: flex; flex-wrap: nowrap; justify-content: space-between; gap: 1rem; }
 .post-nav .spacer { flex: 1; }
-.post-nav .button { max-width: 100%; }
+/* Cap each button at half the row so long titles truncate instead of wrapping the buttons onto a new line. */
+.post-nav .button { flex: 0 1 auto; min-width: 0; max-width: calc(50% - 0.5rem); }
+.post-nav .button span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* ---------- Buttons ---------- */
 .button {
@@ -455,7 +457,7 @@ pre code { background: transparent; color: inherit; font-size: inherit; padding:
   html { font-size: 16px; }
   .container { padding-inline: 1.25rem; }
   .post-nav { flex-direction: column; }
-  .post-nav .button { justify-content: space-between; width: 100%; }
+  .post-nav .button { justify-content: space-between; width: 100%; max-width: 100%; }
   .post-nav .button span { flex: 1; text-align: left; }
   .post-nav .spacer { display: none; }
   .pagination-previous, .pagination-next { font-size: 0.9rem; }

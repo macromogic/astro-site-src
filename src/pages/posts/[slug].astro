@@ -60,10 +60,10 @@ const { Content, headings } = await render(post);
       {(newer || older) && (
         <nav class="post-nav" aria-label="adjacent posts" data-pagefind-ignore>
           {newer ? (
-            <Button href={`/posts/${newer.id}/`} rel="next" icon="fa6-solid:circle-arrow-left">{autoSpace(newer.data.title)}</Button>
+            <Button href={`/posts/${newer.id}/`} rel="next" icon="fa6-solid:circle-arrow-left" title={newer.data.title}>{autoSpace(newer.data.title)}</Button>
           ) : <span class="spacer" />}
           {older ? (
-            <Button href={`/posts/${older.id}/`} rel="prev" iconRight="fa6-solid:circle-arrow-right">{autoSpace(older.data.title)}</Button>
+            <Button href={`/posts/${older.id}/`} rel="prev" iconRight="fa6-solid:circle-arrow-right" title={older.data.title}>{autoSpace(older.data.title)}</Button>
           ) : <span class="spacer" />}
         </nav>
       )}

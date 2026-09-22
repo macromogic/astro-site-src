@@ -28,7 +28,7 @@ const note = isEqualContributionNote(pub.comment) ? undefined : pub.comment;
   .pub-title-row .title { margin-bottom: 0; flex: 1 1 auto; min-width: 0; }
   .pub-title-row :global(.badges) { flex: none; margin-top: 0.3rem; }
   .comment { font-size: 0.9em; }
-  .pub-actions { margin-top: 0.9rem; }
+  .pubcard :global(.pub-actions) { margin-top: 0.5rem; }
   @media (max-width: 599px) {
     .pub-title-row { flex-direction: column-reverse; align-items: flex-start; gap: 0.5rem; }
     .pub-title-row :global(.badges) { margin-top: 0; }

@@ -73,7 +73,7 @@ const pubs = (await getCollection('pubs'))
   .pub-title-row :global(.badges) { flex: none; margin-top: 0.1rem; }
   .pub-authors { margin: 0.3rem 0 0; color: var(--text-light); font-size: 0.95rem; }
   .pub-note { margin: 0.2rem 0 0; color: var(--text-light); font-size: 0.9rem; }
-  .pub-actions { margin-top: 0.7rem; }
+  .pub :global(.pub-actions) { margin-top: 0.5rem; }
   .pub :global(.button) { text-decoration: none; }
   @media (max-width: 599px) {
     .pub-title-row { flex-direction: column-reverse; align-items: flex-start; gap: 0.4rem; }
