@@ -33,9 +33,9 @@ $$
 
 ## 模数不两两互质的情形
 
-### 方法一：转化为模数互质[<sup>[1]</sup>](#refer-1)
+### 方法一：转化为模数互质
 
-先提出以下引理：
+先提出以下引理[^1]：
 
 **引理1** 方程组有解的充要条件是$\forall i, j \in \{1, 2, \dots, n\}, i \neq j,\ $ $\gcd(m_i, m_j) \mid (b_i-b_j)$。
 
@@ -121,5 +121,5 @@ $$
 
 ## 参考文献
 
-<div id="refer-1">[1]<a href="http://www.cnki.com.cn/Article/CJFDTotal-GLKX201003013.htm">刘古胜,徐东星,余畅.推广的孙子定理[J].高师理科学刊,2010,30(03):26-28. </a></div>
+[^1]: [刘古胜,徐东星,余畅.推广的孙子定理[J].高师理科学刊,2010,30(03):26-28.](http://www.cnki.com.cn/Article/CJFDTotal-GLKX201003013.htm)
 

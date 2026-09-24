@@ -15,7 +15,7 @@ export function autoSpace(text) {
 }
 
 /** Elements whose text must never be touched. */
-const SKIP = new Set(['code', 'pre', 'kbd', 'samp', 'script', 'style', 'math', 'annotation', 'textarea']);
+const SKIP = new Set(['code', 'pre', 'kbd', 'samp', 'script', 'style', 'math', 'annotation', 'textarea', 'sup', 'sub']);
 const isSkipped = (node) =>
   node.type === 'element' &&
   (SKIP.has(node.tagName) || (Array.isArray(node.properties?.className) && node.properties.className.some((c) => String(c).startsWith('katex'))));

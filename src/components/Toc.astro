@@ -8,7 +8,7 @@ const { headings, compact = false } = Astro.props;
 
 type Node = MarkdownHeading & { children: MarkdownHeading[] };
 const tree: Node[] = [];
-for (const h of headings.filter((h) => h.depth === 2 || h.depth === 3)) {
+for (const h of headings.filter((h) => (h.depth === 2 || h.depth === 3) && h.slug !== 'footnote-label')) {
   if (h.depth === 2 || tree.length === 0) tree.push({ ...h, children: [] });
   else tree[tree.length - 1]!.children.push(h);
 }

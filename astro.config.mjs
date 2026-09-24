@@ -6,7 +6,7 @@ import icon from 'astro-icon';
 import pagefind from 'astro-pagefind';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
-import { remarkHeadingId } from './src/lib/remark-heading-id.mjs';
+import { remarkAttrs } from './src/lib/remark-attrs.mjs';
 import { rehypeCjkSpacing } from './src/lib/cjk-spacing.mjs';
 import { rehypeFigures } from './src/lib/rehype-figures.mjs';
 
@@ -34,8 +34,10 @@ export default defineConfig({
   markdown: {
     // remark/rehype pipeline so posts get build-time KaTeX.
     processor: unified({
-      remarkPlugins: [remarkMath, remarkHeadingId],
+      remarkPlugins: [remarkMath, remarkAttrs],
       rehypePlugins: [[rehypeKatex, { strict: false }], rehypeCjkSpacing, rehypeFigures],
+      // GFM footnotes: plain ids (#fn-1), no visible "Footnotes" heading (authors write their own).
+      remarkRehype: { clobberPrefix: '', footnoteLabelProperties: { className: ['sr-only'] } },
     }),
     shikiConfig: {
       themes: { light: 'github-light', dark: 'github-dark' },

@@ -51,7 +51,7 @@ function convertBody(body) {
       if (close) return [`${close[1]}${close[2].trimEnd()}`, `${close[1]}$$`];
       return [line];
     }).join('\n');
-    // Zola heading ids "## Title { #id }" -> "## Title {#id}" (handled by remark-heading-id).
+    // Zola heading ids "## Title { #id }" -> "## Title {#id}" (handled by remark-attrs).
     part = part.replace(/^(#{1,6} .*?)\s*\{\s*#([\w-]+)\s*\}\s*$/gm, '$1 {#$2}');
     // A `$$` in the middle of a text line ("...$$...") is an inline closer glued to an inline
     // opener, not display math. Real display blocks have `$$` at the start or end of a line.

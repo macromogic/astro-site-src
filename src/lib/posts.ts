@@ -1,11 +1,13 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
+import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import remarkRehype from 'remark-rehype';
 import rehypeKatex from 'rehype-katex';
 import rehypeStringify from 'rehype-stringify';
 import { rehypeCjkSpacing } from './cjk-spacing.mjs';
+import { remarkAttrs } from './remark-attrs.mjs';
 import { slugifyTerm } from './format';
 
 export type Post = CollectionEntry<'posts'>;
@@ -22,7 +24,9 @@ export async function getPosts(includeDrafts = false): Promise<Post[]> {
 
 const processor = unified()
   .use(remarkParse)
+  .use(remarkGfm)
   .use(remarkMath)
+  .use(remarkAttrs)
   .use(remarkRehype, { allowDangerousHtml: true })
   .use(rehypeKatex, { strict: false })
   .use(rehypeCjkSpacing)
@@ -54,7 +58,7 @@ function excerptTree(tree: MdNode, limit: number): MdNode {
       const label = kids.map((k) => k.value ?? '').join('');
       return /^(https?:\/\/|www\.)/i.test(label) ? [] : kids; // keep link text, drop bare URLs
     }
-    if (node.type === 'image' || node.type === 'imageReference' || node.type === 'html' || node.type === 'break') return [];
+    if (['image', 'imageReference', 'html', 'break', 'footnoteReference'].includes(node.type)) return [];
     if (node.children) return [{ ...node, children: node.children.flatMap(flatten) }];
     return [node];
   };
