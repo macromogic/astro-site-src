@@ -5,6 +5,7 @@ import PostMeta from '../../components/PostMeta.astro';
 import Taxonomy from '../../components/Taxonomy.astro';
 import Toc from '../../components/Toc.astro';
 import Button from '../../components/Button.astro';
+import { Icon } from 'astro-icon/components';
 import { site } from '../../site.config';
 import { getPosts } from '../../lib/posts';
 import { autoSpace } from '../../lib/cjk-spacing.mjs';
@@ -31,12 +32,6 @@ const { Content, headings } = await render(post);
 >
   <section class="section">
     <div class:list={['container', 'post-grid', 'post-page', { 'has-toc': post.data.toc && headings.length > 0 }]}>
-      {post.data.toc && headings.length > 0 && (
-        <details class="toc-inline">
-          <summary>Contents</summary>
-          <Toc headings={headings} compact />
-        </details>
-      )}
       <article class="box">
         <h1 class="title" data-pagefind-meta="title">{autoSpace(post.data.title)}{post.data.draft && <span class="badge is-draft">Draft</span>}</h1>
         {post.data.description && <p class="subtitle">{post.data.description}</p>}
@@ -44,6 +39,12 @@ const { Content, headings } = await render(post);
           <PostMeta post={post} />
           <Taxonomy tags={post.data.tags} legacy={post.data.legacy} />
         </div>
+        {post.data.toc && headings.length > 0 && (
+          <details class="toc-inline" open data-pagefind-ignore>
+            <summary>Contents</summary>
+            <Toc headings={headings} compact />
+          </details>
+        )}
         <div class="content mt-2">
           <Content />
         </div>
@@ -69,6 +70,21 @@ const { Content, headings } = await render(post);
       )}
     </div>
   </section>
+  <div class="fab-stack" data-pagefind-ignore>
+    {post.data.toc && headings.length > 0 && (
+      <button class="fab toc-open" type="button" aria-label="Table of contents" aria-haspopup="dialog" aria-controls="toc-sheet"><Icon name="fa6-solid:list-ul" /></button>
+    )}
+    <a class="fab back-to-top" href="#top" aria-label="Back to top"><Icon name="fa6-solid:arrow-up" /></a>
+  </div>
+  {post.data.toc && headings.length > 0 && (
+    <dialog class="toc-sheet" id="toc-sheet" aria-label="Table of contents" data-pagefind-ignore>
+      <div class="toc-sheet-head">
+        <span>Contents</span>
+        <button class="toc-close" type="button" aria-label="Close"><Icon name="fa6-solid:xmark" /></button>
+      </div>
+      <Toc headings={headings} compact />
+    </dialog>
+  )}
 </BaseLayout>
 
 <style>
@@ -78,15 +94,69 @@ const { Content, headings } = await render(post);
     margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border-soft);
   }
   .post-foot :global(.taxonomy) { margin: 0; flex: 1 1 auto; }
+  /* Mobile: the TOC sits inside the article between header and body, open by default. */
   .toc-inline {
-    grid-area: toc-inline;
     border: 1px solid var(--border-soft); border-radius: var(--radius);
-    background: var(--bg-card); padding: 0.75rem 1rem; margin-bottom: 1.25rem;
+    background: var(--bg-soft); padding: 0.75rem 1rem; margin-top: 1.5rem;
   }
-  .toc-inline summary { cursor: pointer; font-weight: 700; color: var(--text-strong); list-style: none; display: flex; align-items: center; gap: 0.5em; }
-  .toc-inline summary::before { content: '›'; display: inline-block; transition: transform 0.15s ease; color: var(--text-light); }
-  .toc-inline[open] summary::before { transform: rotate(90deg); }
+  .toc-inline summary { cursor: pointer; font-weight: 700; color: var(--text-strong); list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 0.5em; }
+  .toc-inline summary::after { content: '›'; display: inline-block; transform: rotate(90deg); transition: transform 0.15s ease; color: var(--text-light); font-size: 1.25em; line-height: 1; }
+  .toc-inline[open] summary::after { transform: rotate(-90deg); }
   .toc-inline summary::-webkit-details-marker { display: none; }
   .toc-inline :global(.toc) { margin-top: 0.75rem; font-size: 0.9rem; }
   @media (min-width: 1024px) { .toc-inline { display: none; } }
+
+  /* Mobile only: floating buttons (TOC sheet, back to top). The sidebar covers both from 1024px up. */
+  .fab-stack {
+    position: fixed; right: max(1rem, env(safe-area-inset-right)); bottom: max(1.25rem, env(safe-area-inset-bottom));
+    display: none; flex-direction: column; gap: 0.6rem; z-index: 20;
+    opacity: 0; transform: translateY(0.5rem); pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  .fab-stack.is-visible { opacity: 1; transform: none; pointer-events: auto; }
+  .fab {
+    display: inline-flex; align-items: center; justify-content: center; width: 2.75rem; height: 2.75rem; padding: 0;
+    border-radius: 9999px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-strong);
+    box-shadow: var(--shadow); cursor: pointer; font: inherit;
+  }
+  .fab :global(svg) { width: 1.1rem; height: 1.1rem; }
+  @media (max-width: 1023px) { .fab-stack { display: flex; } }
+
+  .toc-sheet {
+    position: fixed; inset: auto 0 0 0; width: 100%; max-width: none; max-height: 70vh; margin: 0; padding: 0 1.25rem max(1.25rem, env(safe-area-inset-bottom));
+    border: 0; border-radius: var(--radius) var(--radius) 0 0; background: var(--bg-card); color: var(--text); box-shadow: var(--shadow);
+    overflow-y: auto; overscroll-behavior: contain;
+  }
+  .toc-sheet::backdrop { background: rgba(10, 10, 10, 0.4); }
+  .toc-sheet-head {
+    position: sticky; top: 0; display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 0 0.5rem; background: var(--bg-card); font-weight: 700; color: var(--text-strong);
+  }
+  .toc-close { display: inline-flex; padding: 0.35rem; border: 0; background: none; color: var(--text-light); cursor: pointer; }
+  .toc-close :global(svg) { width: 1.1rem; height: 1.1rem; }
+  .toc-sheet :global(.toc) { font-size: 0.95rem; }
+  .toc-sheet :global(.toc a) { padding-block: 0.4rem; }
+  @media (min-width: 1024px) { .toc-sheet { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .fab-stack { transition: none; } }
 </style>
+
+<script>
+  const fabs = document.querySelector<HTMLElement>('.fab-stack');
+  if (fabs) {
+    let ticking = false;
+    const update = () => { fabs.classList.toggle('is-visible', window.scrollY > window.innerHeight); ticking = false; };
+    window.addEventListener('scroll', () => { if (!ticking) { requestAnimationFrame(update); ticking = true; } }, { passive: true });
+    update();
+  }
+
+  const sheet = document.querySelector<HTMLDialogElement>('.toc-sheet');
+  if (sheet) {
+    document.querySelector('.toc-open')?.addEventListener('click', () => sheet.showModal());
+    sheet.querySelector('.toc-close')?.addEventListener('click', () => sheet.close());
+    // A tap on the backdrop (outside the sheet's box) or on a heading link closes it.
+    sheet.addEventListener('click', (e) => {
+      const r = sheet.getBoundingClientRect();
+      const outside = e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+      if (outside || (e.target as HTMLElement).closest('a')) sheet.close();
+    });
+  }
+</script>
