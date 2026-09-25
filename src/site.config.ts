@@ -36,5 +36,6 @@ export const site = {
     discord: 'macromogic',
     googleScholar: 'L8T5nBEAAAAJ',
     orcid: '0009-0003-6017-0474',
+    dblp: '57/10219-1',
   },
 };
