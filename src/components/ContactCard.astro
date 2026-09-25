@@ -99,7 +99,9 @@ const obfuscatedEmail = (c.email ?? '').replace('@', ' [at] ').replace(/\./g, ' 
   .line { display: block; }
   .contact-email { color: var(--text-strong); }
   .contact-social { margin-top: 1.1rem; padding-top: 0.9rem; border-top: 1px solid var(--border-soft); }
-  .contact-social :global(.social.is-compact) { justify-content: center; gap: 0.15rem; }
+  /* Keep every icon on one row: no wrapping, and let the buttons shrink a little when the card is narrow. */
+  .contact-social :global(.social.is-compact) { flex-wrap: nowrap; justify-content: space-between; gap: 0; }
+  .contact-social :global(.social.is-compact a) { flex: 0 1 2rem; min-width: 0; }
 
   /* Tablet: card spans the column, so go horizontal. */
   @media (min-width: 600px) and (max-width: 1023px) {
