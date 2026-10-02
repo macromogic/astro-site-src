@@ -2,16 +2,18 @@
 import PostMeta from './PostMeta.astro';
 import Taxonomy from './Taxonomy.astro';
 import Button from './Button.astro';
-import { renderExcerpt, type Post } from '../lib/posts';
+import LangLinks from './LangLinks.astro';
+import { getAlternates, postLang, postPath, renderExcerpt, type Post } from '../lib/posts';
 import { autoSpace } from '../lib/cjk-spacing.mjs';
 
 interface Props { post: Post }
 const { post } = Astro.props;
-const href = `/posts/${post.id}/`;
+const href = postPath(post);
 const excerpt = await renderExcerpt(post);
+const alternates = await getAlternates(post, import.meta.env.DEV);
 ---
 
-<article class:list={['box', 'post-card', { 'is-draft': post.data.draft }]} lang={post.data.lang}>
+<article class:list={['box', 'post-card', { 'is-draft': post.data.draft }]} lang={postLang(post)}>
   <h2 class="title">
     <a class="has-text-dark" href={href}>{autoSpace(post.data.title)}</a>
     {post.data.draft && <span class="badge is-draft" title="Unpublished draft, visible in dev only">Draft</span>}
@@ -23,6 +25,7 @@ const excerpt = await renderExcerpt(post);
   </div>
   <div class="card-foot">
     <Taxonomy tags={post.data.tags} legacy={post.data.legacy} />
+    <LangLinks alternates={alternates} class="card-langs" />
     <Button href={href} variant="text" size="small" color="accent" iconRight="fa6-solid:arrow-right" class="read-more-btn">Read more</Button>
   </div>
 </article>
@@ -37,4 +40,5 @@ const excerpt = await renderExcerpt(post);
   .card-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1rem; margin-top: 1rem; }
   .card-foot :global(.taxonomy) { flex: 1 1 auto; margin: 0; }
   .card-foot :global(.read-more-btn) { margin-right: -0.5em; margin-left: auto; }
+  .card-foot :global(.card-langs) { flex: none; }
 </style>

@@ -1,0 +1,28 @@
+---
+import PostPage from '../../../components/PostPage.astro';
+import { getAlternates, getPosts, getTranslations, postLang, postSlug, sameLanguageVersion } from '../../../lib/posts';
+
+/**
+ * Translated posts at /<lang>/posts/<slug>/ (e.g. src/content/posts/my-post.en.md -> /en/posts/my-post/).
+ * Only paths for existing translation files are generated; the original stays at /posts/<slug>/.
+ */
+export async function getStaticPaths() {
+  const dev = import.meta.env.DEV;
+  const originals = await getPosts(dev); // newest first
+  const translations = await getTranslations(dev);
+  return Promise.all(translations.map(async (post) => {
+    const lang = postLang(post);
+    const i = originals.findIndex((p) => p.id === postSlug(post));
+    // Neighbours stay in the reader's language when that version exists, else fall back to the original.
+    const neighbour = async (p?: typeof post) => (p ? sameLanguageVersion(p, lang, dev) : undefined);
+    return {
+      params: { lang, slug: postSlug(post) },
+      props: { post, newer: await neighbour(originals[i - 1]), older: await neighbour(originals[i + 1]), alternates: await getAlternates(post, dev) },
+    };
+  }));
+}
+
+const { post, newer, older, alternates } = Astro.props;
+---
+
+<PostPage post={post} newer={newer} older={older} alternates={alternates} />

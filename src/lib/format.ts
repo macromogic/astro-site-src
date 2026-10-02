@@ -15,3 +15,8 @@ export const isoDate = (d: Date) => d.toISOString().slice(0, 10);
 /** Matches Zola's taxonomy slugs: lowercase, spaces and punctuation collapsed to "-". */
 export const slugifyTerm = (s: string) =>
   s.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-+|-+$/g, '');
+
+/** A language's name in that language ("English", "简体中文"); falls back to the raw tag. */
+export const languageName = (lang: string) => {
+  try { return new Intl.DisplayNames([lang], { type: 'language' }).of(lang) ?? lang; } catch { return lang; }
+};

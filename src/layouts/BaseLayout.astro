@@ -17,6 +17,7 @@ import Footer from '../components/Footer.astro';
 import SearchModal from '../components/SearchModal.astro';
 import MathEnhance from '../components/MathEnhance.astro';
 import CodeEnhance from '../components/CodeEnhance.astro';
+import Tooltips from '../components/Tooltips.astro';
 import { site } from '../site.config';
 import portrait from '../assets/photo.jpg';
 
@@ -30,6 +31,8 @@ interface Props {
   type?: 'website' | 'article';
   publishedTime?: Date;
   tags?: string[];
+  /** Other language versions of this page (posts). The first entry is the original and becomes x-default. */
+  alternates?: { lang: string; href: string }[];
 }
 
 const {
@@ -40,6 +43,7 @@ const {
   type = 'website',
   publishedTime,
   tags = [],
+  alternates = [],
 } = Astro.props;
 
 const fullTitle = title ? `${site.title} | ${title}` : site.title;
@@ -88,6 +92,8 @@ const jsonLd = type === 'article'
     <meta name="description" content={description} />
     <meta name="author" content={site.author.name} />
     <link rel="canonical" href={canonical} />
+    {alternates.length > 1 && alternates.map((a) => <link rel="alternate" hreflang={a.lang} href={new URL(a.href, Astro.site)} />)}
+    {alternates.length > 1 && <link rel="alternate" hreflang="x-default" href={new URL(alternates[0]!.href, Astro.site)} />}
 
     <meta property="og:site_name" content={site.title} />
     <meta property="og:type" content={type} />
@@ -135,6 +141,7 @@ const jsonLd = type === 'article'
     <SearchModal />
     <MathEnhance />
     <CodeEnhance />
+    <Tooltips />
     <Footer />
   </body>
 </html>

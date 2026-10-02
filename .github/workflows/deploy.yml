@@ -15,6 +15,8 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      # rehype-mermaid renders diagrams in headless Chromium at build time.
+      - run: npx playwright install --with-deps chromium
       - run: npm run build
       - name: Deploy to macromogic.github.io
         if: github.ref == 'refs/heads/main'

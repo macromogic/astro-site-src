@@ -339,8 +339,12 @@ pre code { background: transparent; color: inherit; font-size: inherit; padding:
 .katex .mord.text .textit { font-style: italic; }
 /* Wide display equations scroll horizontally instead of wrapping mid-formula;
    the vertical padding keeps tall fractions and limits from being clipped. */
-.katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.6em 0.25em; margin: 1.1em -0.25em; scrollbar-width: thin; }
+.katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.5em 0.25em; margin: 0.5em -0.25em; scrollbar-width: thin; }
 .katex-display > .katex { white-space: nowrap; }
+/* A block before an equation drops its bottom margin, so the equation's own margin
+   sets the gap on both sides; otherwise the 1em paragraph margin wins above (collapsing).
+   MathEnhance wraps each display block in .math-block on the client, hence both selectors. */
+.content :is(p, ul, ol, dl, blockquote, pre, table, figure):has(+ :is(.katex-display, .math-block)) { margin-bottom: 0; }
 
 /* ---------- Navbar ---------- */
 .navbar {
@@ -408,6 +412,8 @@ pre code { background: transparent; color: inherit; font-size: inherit; padding:
 /* Cap each button at half the row so long titles truncate instead of wrapping the buttons onto a new line. */
 .post-nav .button { flex: 0 1 auto; min-width: 0; max-width: calc(50% - 0.5rem); }
 .post-nav .button span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* The right-arrow (older post) link reads right-to-left, so its label hugs the arrow. */
+.post-nav .button[rel="prev"] span { text-align: right; }
 
 /* ---------- Buttons ---------- */
 .button {
@@ -489,7 +495,13 @@ pre code { background: transparent; color: inherit; font-size: inherit; padding:
 .modal-close:hover { color: var(--text-strong); background: var(--bg); }
 
 /* ---------- Dark-mode media tweak ---------- */
-:root[data-theme="dark"] .content img { filter: brightness(0.8) contrast(0.95); }
+:root[data-theme="dark"] .content img:not(.mermaid-light, .mermaid-dark) { filter: brightness(0.8) contrast(0.95); }
+
+/* ---------- Mermaid diagrams (build-time SVG, one render per theme) ---------- */
+.content .mermaid img { max-width: 100%; height: auto; }
+.content .mermaid .mermaid-dark { display: none; }
+:root[data-theme="dark"] .content .mermaid .mermaid-light { display: none; }
+:root[data-theme="dark"] .content .mermaid .mermaid-dark { display: block; }
 
 /* ---------- Small screens ---------- */
 @media (max-width: 768px) {

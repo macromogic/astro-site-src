@@ -1,0 +1,132 @@
+---
+/**
+ * Hover bubbles for `[text]{tip="..."}` spans (see remark-attrs.mjs).
+ * One shared bubble is positioned above the span, clamped to the viewport, and flips below when
+ * there is no room. Mouse hover shows it transiently; keyboard focus, a click or a tap pins it
+ * until Escape, blur, or a tap elsewhere. Does nothing on pages without tips.
+ */
+---
+
+<div id="tip-bubble" class="tip-bubble" role="tooltip" hidden></div>
+
+<script>
+  const bubble = document.getElementById('tip-bubble')!;
+  const GAP = 8; // px between the span and the bubble, and from the viewport edge
+  let current: HTMLElement | null = null;
+  let pinned = false;
+
+  const tipOf = (target: EventTarget | null) =>
+    (target as Element | null)?.closest?.<HTMLElement>('[data-tip]') ?? null;
+
+  const place = () => {
+    if (!current) return;
+    // Anchor to the first line box of the span, since a span can wrap across lines.
+    const rects = current.getClientRects();
+    const anchor = rects[0] ?? current.getBoundingClientRect();
+    const box = bubble.getBoundingClientRect();
+    const vw = document.documentElement.clientWidth;
+    const centre = anchor.left + anchor.width / 2;
+    const left = Math.min(Math.max(GAP, centre - box.width / 2), vw - GAP - box.width);
+    const above = anchor.top - GAP - box.height >= GAP;
+    const top = above ? anchor.top - GAP - box.height : anchor.bottom + GAP;
+    bubble.style.left = `${left}px`;
+    bubble.style.top = `${top}px`;
+    bubble.style.setProperty('--arrow-x', `${centre - left}px`);
+    bubble.classList.toggle('is-below', !above);
+  };
+
+  const show = (el: HTMLElement, pin: boolean) => {
+    if (current && current !== el) current.removeAttribute('aria-describedby');
+    current = el;
+    pinned = pin || (pinned && current === el);
+    bubble.textContent = el.dataset.tip ?? '';
+    bubble.hidden = false;
+    el.setAttribute('aria-describedby', 'tip-bubble');
+    place();
+    bubble.classList.add('is-visible');
+  };
+
+  const hide = () => {
+    if (!current) return;
+    current.removeAttribute('aria-describedby');
+    current = null;
+    pinned = false;
+    bubble.classList.remove('is-visible');
+    bubble.hidden = true;
+  };
+
+  // Mouse: transient on hover. Touch fires pointerover too, but the click below handles it.
+  document.addEventListener('pointerover', (e) => {
+    if (e.pointerType !== 'mouse') return;
+    const el = tipOf(e.target);
+    if (el && el !== current) show(el, false);
+  });
+  document.addEventListener('pointerout', (e) => {
+    if (e.pointerType !== 'mouse' || pinned) return;
+    const el = tipOf(e.target);
+    if (el && el === current && !el.contains(e.relatedTarget as Node | null)) hide();
+  });
+
+  // Click or tap: pin, and a second one on the same span closes it.
+  document.addEventListener('click', (e) => {
+    const el = tipOf(e.target);
+    if (!el) { if (!bubble.contains(e.target as Node)) hide(); return; }
+    if (el === current && pinned) hide(); else show(el, true);
+  });
+
+  // Keyboard: focus shows, blur hides. Clicks also focus the span; the click handler already pinned it.
+  document.addEventListener('focusin', (e) => {
+    const el = tipOf(e.target);
+    if (el && el.matches(':focus-visible')) show(el, true);
+  });
+  document.addEventListener('focusout', (e) => {
+    if (current && e.target === current && !pinned) hide();
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') hide(); });
+
+  window.addEventListener('scroll', place, { passive: true });
+  window.addEventListener('resize', place);
+</script>
+
+<style is:global>
+  .content [data-tip] {
+    cursor: help;
+    text-decoration: underline dotted;
+    text-decoration-color: var(--text-light);
+    text-underline-offset: 0.2em;
+  }
+  .content [data-tip]:hover, .content [data-tip][aria-describedby] { text-decoration-color: var(--link); }
+  .content [data-tip]:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; border-radius: 2px; }
+
+  .tip-bubble {
+    position: fixed;
+    top: 0; left: 0;
+    max-width: min(22rem, calc(100vw - 1rem));
+    padding: 0.45em 0.8em;
+    border-radius: var(--radius);
+    background: var(--text-strong);
+    color: var(--bg);
+    font-size: 0.85rem;
+    line-height: 1.5;
+    box-shadow: var(--shadow);
+    z-index: 50;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.12s ease;
+  }
+  .tip-bubble.is-visible { opacity: 1; }
+  .tip-bubble::after {
+    content: '';
+    position: absolute;
+    left: var(--arrow-x, 50%);
+    top: 100%;
+    margin-left: -5px;
+    border: 5px solid transparent;
+    border-top-color: var(--text-strong);
+  }
+  .tip-bubble.is-below::after {
+    top: auto; bottom: 100%;
+    border-top-color: transparent;
+    border-bottom-color: var(--text-strong);
+  }
+</style>

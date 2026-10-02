@@ -1,0 +1,43 @@
+---
+/**
+ * Links to the other language versions of a post.
+ *
+ *   <LangLinks alternates={alternates} current={post} />   switcher on the post page: every version, current one marked
+ *   <LangLinks alternates={alternates} />                   chips on a listing card: translations only
+ */
+import { Icon } from 'astro-icon/components';
+import { languageName } from '../lib/format';
+import type { Alternate, Post } from '../lib/posts';
+
+interface Props { alternates: Alternate[]; current?: Post; class?: string }
+const { alternates, current, class: className } = Astro.props;
+const shown = current ? alternates : alternates.slice(1); // a card already shows the original
+---
+
+{shown.length > (current ? 1 : 0) && (
+  <nav class:list={['lang-links', className]} aria-label="Other languages">
+    <Icon name="fa6-solid:language" aria-hidden="true" />
+    <ul>
+      {shown.map(({ lang, href, post }) => {
+        const isCurrent = current?.id === post.id;
+        return (
+          <li>
+            {isCurrent
+              ? <span class="lang-link is-current" lang={lang} aria-current="page">{languageName(lang)}</span>
+              : <a class="lang-link" href={href} lang={lang} hreflang={lang} rel="alternate">{languageName(lang)}</a>}
+          </li>
+        );
+      })}
+    </ul>
+  </nav>
+)}
+
+<style>
+  .lang-links { display: inline-flex; align-items: center; gap: 0.45em; color: var(--text-light); font-size: 0.85rem; }
+  .lang-links :global(svg) { width: 1.1em; height: 1.1em; flex: none; }
+  .lang-links ul { display: inline-flex; flex-wrap: wrap; gap: 0.25em 0; margin: 0; padding: 0; list-style: none; }
+  .lang-links li + li::before { content: '·'; margin-inline: 0.5em; color: var(--border); }
+  .lang-link { color: var(--text-light); text-decoration: none; white-space: nowrap; }
+  a.lang-link:hover { color: var(--link-hover); text-decoration: underline; }
+  .lang-link.is-current { color: var(--text-strong); font-weight: 600; }
+</style>

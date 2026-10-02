@@ -2,7 +2,13 @@ import { defineCollection, z } from 'astro:content';
 import { glob, file } from 'astro/loaders';
 
 const posts = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/posts' }),
+  loader: glob({
+    pattern: '**/*.md',
+    base: './src/content/posts',
+    // Ids are the bare file paths: the default slugifier would turn a translation's
+    // "my-post.en" into "my-posten" and lose the language suffix.
+    generateId: ({ entry }) => entry.replace(/\.md$/, ''),
+  }),
   schema: z.object({
     title: z.string(),
     date: z.coerce.date(),
@@ -11,7 +17,11 @@ const posts = defineCollection({
     /** Old post kept for the record; shown with a "Legacy" badge. */
     legacy: z.boolean().default(false),
     tags: z.array(z.string()).default([]),
-    /** BCP 47 tag for the article, e.g. "zh-Hans", "zh-Hant", "ja", "en". */
+    /**
+     * BCP 47 tag for the article, e.g. "zh-Hans", "zh-Hant", "ja", "en". Defaults to the site language.
+     * Translations are separate files named `<slug>.<lang>.md` beside the original and take their
+     * language from the suffix (see src/lib/posts.ts).
+     */
     lang: z.string().optional(),
     toc: z.boolean().default(true),
   }),

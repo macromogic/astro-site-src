@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { getPosts, renderMarkdown } from '../lib/posts';
+import { getPosts, postLang, postPath, renderMarkdown } from '../lib/posts';
 import { site } from '../site.config';
 
 const esc = (s: string) =>
@@ -10,9 +10,9 @@ export const GET: APIRoute = async () => {
   const updated = (posts[0]?.data.date ?? new Date()).toISOString();
   const entries = await Promise.all(
     posts.map(async (post) => {
-      const url = `${site.url}/posts/${post.id}/`;
+      const url = `${site.url}${postPath(post)}`;
       const html = await renderMarkdown(post.body ?? '');
-      return `  <entry xml:lang="${post.data.lang ?? site.lang}">
+      return `  <entry xml:lang="${postLang(post)}">
     <title>${esc(post.data.title)}</title>
     <published>${post.data.date.toISOString()}</published>
     <updated>${post.data.date.toISOString()}</updated>

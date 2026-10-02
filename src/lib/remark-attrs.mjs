@@ -6,6 +6,7 @@
  *   ![alt](/images/x.png){width=40%}           (instead of <img ... style="width: 40%">)
  *   [text](/url){target=_blank .button}
  *   [inline text]{.hl}                         -> <span class="hl">
+ *   [term]{tip="short gloss"}                  -> hover/focus/tap bubble (plain text; see Tooltips.astro)
  *
  *   ::: {.note title="提示"}                   -> <div class="callout note"><p class="callout-title">提示</p>...
  *   Any block content, nested divs allowed.
@@ -25,7 +26,8 @@
  *
  * Attribute grammar: `#id`, `.class`, `key=value`, `key="quoted value"`, space separated.
  * `width`/`height` with a CSS unit (`40%`, `12rem`) become inline `style`; bare numbers stay
- * HTML attributes. Everything else is emitted as-is, so new CSS hooks need no plugin changes.
+ * HTML attributes. `tip` becomes `data-tip` plus a tab stop, so the bubble is
+ * keyboard reachable. Everything else is emitted as-is, so new CSS hooks need no plugin changes.
  * The block after an image/link/code span must be glued to it (no space).
  * Fences should be separated from neighbouring blocks by blank lines, as in pandoc: CommonMark's
  * lazy continuation otherwise folds a `:::` line into a preceding list item or quote. A single
@@ -49,6 +51,7 @@ function parseAttrs(src) {
       const value = dq ?? sq ?? cdq ?? csq ?? bare;
       if ((key === 'width' || key === 'height') && /^\d*\.?\d+(%|[a-z]+)$/i.test(value)) styles.push(`${key}: ${value}`);
       else if (key === 'style') styles.push(value.replace(/;\s*$/, ''));
+      else if (key === 'tip') { props['data-tip'] = value; props.tabIndex = 0; }
       else props[key] = value;
     } else if (flag) props[flag] = true;
   }

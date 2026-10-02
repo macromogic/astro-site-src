@@ -28,6 +28,8 @@ tags: ["Meta"]
 
 `[文字]{.class}` 生成 `<span>`，可嵌套，里面可以有加粗、公式：[高亮 **加粗** $x^2$]{.hl}、[次要说明]{.muted}、[小字]{.small}。
 
+`[文字]{tip="说明"}` 给一段文字加悬浮气泡：鼠标悬停、键盘聚焦或触屏点按时显示，比如[置换]{tip="permutation：把一个有限集合的元素重新排列的双射"}和[CRT]{tip="Chinese Remainder Theorem，中国剩余定理"}。气泡里只能放纯文本，需要链接或公式请改用脚注。
+
 ## Fenced div
 
 `::: name` 或 `::: {.a .b key=val}` 开始，`:::` 结束，可嵌套（内层用更多冒号区分更清楚）。和 Pandoc 一样，围栏前后最好留空行：紧跟在列表或引用后面的 `:::` 会被 CommonMark 当成上一块的延续行，单独一个结束围栏还能识别出来，开始围栏就不行了。目前有样式的类：
@@ -128,3 +130,23 @@ $$
 
 ::: {style="clear: both"}
 :::
+
+## Mermaid 图表
+
+```` ```mermaid ```` 代码块在构建时用 `rehype-mermaid` 渲染成 SVG（无需浏览器端脚本），亮暗两套主题各渲染一份，跟随站点的主题开关切换。
+
+```mermaid
+flowchart LR
+    A[Markdown] --> B{有 mermaid 块?}
+    B -- 有 --> C[Playwright + Chromium]
+    C --> D[SVG]
+    B -- 没有 --> E[照常输出]
+```
+
+```mermaid
+sequenceDiagram
+    participant R as 读者
+    participant S as 站点
+    R->>S: 切换到暗色
+    S-->>R: 显示暗色版 SVG
+```
