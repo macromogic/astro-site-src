@@ -1,0 +1,61 @@
+/*
+ * Layout for scripts/cards.mjs: the article flows through CSS columns, one column per card, and the
+ * script screenshots the viewport once per column. global.css provides the prose styles; this file
+ * only sets the frame and relaxes the rules that fight fragmentation (scroll containers are monolithic,
+ * so code blocks and tables must be allowed to break across cards).
+ */
+:root {
+  /* --card-w, --card-h and --card-font are set inline by the script. */
+  --pad-x: calc(var(--card-w) / 15);
+  --pad-top: calc(var(--card-w) / 15);
+  --pad-bottom: calc(var(--card-w) / 9);
+  --col-w: calc(var(--card-w) - 2 * var(--pad-x));
+  --col-h: calc(var(--card-h) - var(--pad-top) - var(--pad-bottom));
+}
+html { font-size: var(--card-font); }
+body { display: block; min-height: 0; width: var(--card-w); height: var(--card-h); overflow: hidden; }
+
+.card-page { position: relative; width: var(--card-w); height: var(--card-h); padding: var(--pad-top) var(--pad-x) var(--pad-bottom); overflow: hidden; background: var(--bg); }
+/* Column i starts at x = i * card width, so translateX(-i * card width) brings it into the frame. */
+.card-flow {
+  width: var(--col-w); height: var(--col-h);
+  column-width: var(--col-w); column-gap: calc(2 * var(--pad-x)); column-fill: auto;
+}
+
+/* ---------- Title block (first card) ---------- */
+.card-head { padding-bottom: 0.9rem; margin-bottom: 1.2rem; border-bottom: 1px solid var(--border-soft); break-after: avoid; }
+.card-head .card-title { font-size: 1.9rem; line-height: 1.2; text-wrap: pretty; margin: 0 0 0.5rem; }
+.card-head .card-desc { font-size: 1.05rem; color: var(--text); margin: 0 0 0.6rem; }
+.card-head .card-meta { display: flex; flex-wrap: wrap; gap: 0.2em 0.9em; font-size: 0.8rem; color: var(--text-light); }
+.card-head .card-meta .tag { color: var(--info); }
+
+/* ---------- Footer on every card ---------- */
+.card-foot {
+  position: absolute; left: var(--pad-x); right: var(--pad-x); bottom: calc(var(--pad-bottom) / 2);
+  transform: translateY(50%);
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 0.72rem; color: var(--text-light);
+}
+.card-foot .card-site { font-weight: 700; color: var(--text-strong); }
+
+/* ---------- Prose adjustments ---------- */
+.content { line-height: 1.7; }
+.content h1, .content h2, .content h3, .content h4 { break-after: avoid; }
+.content h2 { font-size: 1.45em; margin-top: 1.3em; }
+.content h3 { font-size: 1.2em; margin-top: 1.2em; }
+.content p, .content li { orphans: 2; widows: 2; }
+.content figure, .content img, .content blockquote, .content .callout, .content .katex-display, .content tr { break-inside: avoid; }
+/* Scroll containers cannot be fragmented: let code and tables break across cards and wrap long lines. */
+/* Shiki sets overflow-x: auto inline, hence !important. */
+.content pre { overflow: visible !important; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.74rem; line-height: 1.55; padding: 0.9em 1em; box-decoration-break: clone; }
+.content table { display: table; overflow: visible; }
+.content .katex-display { overflow: visible; }
+/* Wide display equations are scaled by the script; never let them push into the next column. */
+.content .katex-display > .katex { white-space: nowrap; }
+/* Nothing can be hovered in a picture. */
+.content [data-tip] { text-decoration: none; cursor: auto; }
+.content a { color: inherit; text-decoration: none; }
+/* A figure taller than a card would be clipped: cap it and keep the aspect ratio. */
+.content img { max-height: calc(var(--col-h) - 3rem); width: auto; }
+.content .mermaid img { margin-inline: auto; }
+.content .footnotes { margin-top: 1.5rem; }
