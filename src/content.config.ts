@@ -44,6 +44,8 @@ const pubs = defineCollection({
     url: z.string().url().optional(),
     website: z.string().url().optional(),
     code: z.string().url().optional(),
+    /** Name of a BibTeX file in src/data/bib/, without the .bib extension; adds a BibTeX button. */
+    bib: z.string().optional(),
   }),
 });
 

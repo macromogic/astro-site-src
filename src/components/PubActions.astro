@@ -1,17 +1,87 @@
 ---
-/** Paper / Website / Code buttons for a publication. */
+/** Paper / Website / Code / BibTeX buttons for a publication. BibTeX opens a panel with the entry and a copy button. */
 import Button from './Button.astro';
-import type { Pub } from '../lib/pubs';
+import { getBibtex, type Pub } from '../lib/pubs';
 
 interface Props { pub: Pub['data']; class?: string }
 const { pub, class: className } = Astro.props;
 const codeIcon = pub.code && /github\.com/.test(pub.code) ? 'fa6-brands:github' : pub.code && /gitlab\.com/.test(pub.code) ? 'fa6-brands:gitlab' : 'fa6-solid:code';
+const bibtex = pub.bib ? getBibtex(pub.bib) : undefined;
+const bibId = pub.bib && `bibtex-${pub.bib}`;
 ---
 
-{(pub.url || pub.website || pub.code) && (
-  <div class:list={['buttons', className]}>
-    {pub.url && <Button href={pub.url} size="small" color="accent" icon="fa6-solid:file-lines">Paper</Button>}
-    {pub.website && <Button href={pub.website} size="small" icon="fa6-solid:globe">Website</Button>}
-    {pub.code && <Button href={pub.code} size="small" icon={codeIcon}>Code</Button>}
+{(pub.url || pub.website || pub.code || bibtex) && (
+  <div class={className}>
+    <div class="buttons">
+      {pub.url && <Button href={pub.url} size="small" color="accent" icon="fa6-solid:file-lines">Paper</Button>}
+      {pub.website && <Button href={pub.website} size="small" icon="fa6-solid:globe">Website</Button>}
+      {pub.code && <Button href={pub.code} size="small" icon={codeIcon}>Code</Button>}
+      {bibtex && (
+        <Button size="small" icon="fa6-solid:quote-right" class="bib-toggle" aria-expanded="false" aria-controls={bibId}>BibTeX</Button>
+      )}
+    </div>
+    {bibtex && (
+      <div class="bib-panel" id={bibId} hidden>
+        <pre><code>{bibtex}</code></pre>
+        <button type="button" class="bib-copy" aria-label="Copy BibTeX">Copy</button>
+      </div>
+    )}
   </div>
 )}
+
+<script>
+  document.addEventListener('click', async (event) => {
+    const target = event.target as Element | null;
+    const toggle = target?.closest<HTMLButtonElement>('.bib-toggle');
+    if (toggle) {
+      const panel = document.getElementById(toggle.getAttribute('aria-controls') ?? '');
+      if (!panel) return;
+      const open = panel.hidden;
+      panel.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+      return;
+    }
+    const copy = target?.closest<HTMLButtonElement>('.bib-copy');
+    if (copy) {
+      const text = copy.parentElement?.querySelector('code')?.textContent ?? '';
+      try {
+        await navigator.clipboard.writeText(text);
+        copy.textContent = 'Copied';
+      } catch {
+        copy.textContent = 'Failed';
+      }
+      setTimeout(() => { copy.textContent = 'Copy'; }, 1600);
+    }
+  });
+</script>
+
+<style>
+  .bib-panel { position: relative; margin-top: 0.6rem; }
+  .bib-panel pre {
+    margin: 0;
+    padding: 0.8rem 1rem;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    white-space: pre;
+    overflow-x: auto;
+    background: var(--code-bg);
+    color: var(--text);
+    border-radius: var(--radius-small);
+  }
+  .bib-copy {
+    position: absolute;
+    top: 0.45rem;
+    right: 0.6rem;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    line-height: 1.5;
+    padding: 0.1em 0.5em;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+    background: var(--bg-card);
+    color: var(--text-light);
+    cursor: pointer;
+  }
+  .bib-copy:hover { color: var(--text-strong); border-color: var(--text-light); }
+  .bib-toggle[aria-expanded='true'] { border-color: var(--text-light); }
+</style>

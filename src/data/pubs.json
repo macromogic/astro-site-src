@@ -7,13 +7,15 @@
             "Weijie Huang*",
             "Mingde Ren",
             "Hongyi Lu",
+            "Zhenyu Ning",
             "Heming Cui",
             "Fengwei Zhang"
         ],
         "book": "the 10th International Workshop on Hardware and Architectural Support for Security and Privacy (HASP)",
         "date": "2021-10-18",
         "comment": "*: Equal contribution",
-        "url": "https://dl.acm.org/doi/abs/10.1145/3505253.3505257"
+        "url": "https://dl.acm.org/doi/abs/10.1145/3505253.3505257",
+        "bib": "li2021novel"
     },
     {
         "title": "Whole-Program Privilege and Compartmentalization Analysis with the Object-Encapsulation Model",
@@ -27,7 +29,8 @@
         "book": "2023 IEEE Symposium on Security and Privacy Workshops (SPW)",
         "date": "2023-05-25",
         "url": "https://ieeexplore.ieee.org/abstract/document/10188652/",
-        "code": "https://gitlab.com/fierce-lab/objectencapsulation"
+        "code": "https://gitlab.com/fierce-lab/objectencapsulation",
+        "bib": "yang2023whole"
     },
     {
         "title": "Endoprocess: Programmable and Extensible Subprocess Isolation",
@@ -41,7 +44,8 @@
         ],
         "book": "the 2023 New Security Paradigms Workshop (NSPW)",
         "date": "2023-09-18",
-        "url": "https://dl.acm.org/doi/abs/10.1145/3633500.3633507"
+        "url": "https://dl.acm.org/doi/abs/10.1145/3633500.3633507",
+        "bib": "yang2023endoprocess"
     },
     {
         "title": "Endokernel: A Thread Safe Monitor for Lightweight Subprocess Isolation",
@@ -57,7 +61,8 @@
         ],
         "book": "the 33rd USENIX Security Symposium",
         "date": "2024-08-13",
-        "url": "https://www.usenix.org/conference/usenixsecurity24/presentation/yang-fangfei"
+        "url": "https://www.usenix.org/conference/usenixsecurity24/presentation/yang-fangfei",
+        "bib": "yang2024endokernel"
     },
     {
         "title": "Large Language Model-Powered Evolutionary Code Optimization on a Phylogenetic Tree",
@@ -74,7 +79,8 @@
         "date": "2026-01-20",
         "comment": "*: Equal contribution",
         "url": "https://arxiv.org/abs/2601.14523",
-        "code": "https://github.com/annihi1ation/PhyloEvolve"
+        "code": "https://github.com/annihi1ation/PhyloEvolve",
+        "bib": "zhao2026large"
     },
     {
         "title": "Hoss: Fast Oblivious Semantic Search with Heterogeneous GPU-CPU-TEE Architecture",
@@ -91,7 +97,9 @@
         "book": "2026 ACM SIGSAC Conference on Computer and Communications Security",
         "date": "2026-11-15",
         "comment": "*: Equal contribution",
-        "code": "https://github.com/uu60/hoss"
+        "url": "https://dl.acm.org/doi/10.1145/3830454.3846673",
+        "code": "https://github.com/uu60/hoss",
+        "bib": "du2026hoss"
     },
     {
         "title": "Towards Practical Oblivious Relational Analytics with Heterogeneous TEE",

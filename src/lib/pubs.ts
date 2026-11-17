@@ -8,6 +8,15 @@ export const isEqualContributionNote = (comment?: string) => !!comment && /equal
 /** Dated after the build: accepted or scheduled but not yet out. */
 export const isForthcoming = (date: Date, now = new Date()) => date.getTime() > now.getTime();
 
+const bibFiles = import.meta.glob<string>('../data/bib/*.bib', { query: '?raw', import: 'default', eager: true });
+
+/** Raw BibTeX entry for a publication's `bib` key, from src/data/bib/<key>.bib. */
+export function getBibtex(key: string): string {
+  const text = bibFiles[`../data/bib/${key}.bib`];
+  if (text === undefined) throw new Error(`pubs.json names bib "${key}", but src/data/bib/${key}.bib does not exist`);
+  return text.trim();
+}
+
 export const sortByDateDesc = (pubs: Pub[]) => [...pubs].sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 
 /** Group publications by year, newest year first. */
